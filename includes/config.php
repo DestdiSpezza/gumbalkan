@@ -1,7 +1,11 @@
 <?php
 declare(strict_types=1);
 
-// ─── Database connection ──────────────────────────────────────────────────────
+// ─── Database ────────────────────────────────────────────────────────────────
+// SQLite – cesta k souboru (automaticky se vytvoří)
+define('DB_SQLITE_PATH', __DIR__ . '/../database/gumbalkan.sqlite');
+
+// MySQL fallback (nech prázdné pro SQLite)
 define('DB_HOST', '');
 define('DB_NAME', '');
 define('DB_USER', '');

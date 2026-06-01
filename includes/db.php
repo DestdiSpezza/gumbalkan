@@ -3,20 +3,64 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/config.php';
 
-// ─── PDO singleton ────────────────────────────────────────────────────────────
+// ─── PDO singleton (SQLite auto-fallback) ─────────────────────────────────────
 function get_db(): PDO
 {
     static $pdo = null;
-    if ($pdo === null) {
+    if ($pdo !== null) return $pdo;
+
+    $useSqlite = (DB_HOST === '' || !extension_loaded('pdo_mysql'));
+
+    if ($useSqlite) {
+        $dir = dirname(DB_SQLITE_PATH);
+        if (!is_dir($dir)) mkdir($dir, 0755, true);
+        $pdo = new PDO('sqlite:' . DB_SQLITE_PATH, null, null, [
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ]);
+        $pdo->exec('PRAGMA journal_mode=WAL');
+        _init_sqlite($pdo);
+    } else {
         $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
-        $options = [
+        $pdo = new PDO($dsn, DB_USER, DB_PASS, [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
-        ];
-        $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+        ]);
     }
     return $pdo;
+}
+
+function _init_sqlite(PDO $pdo): void
+{
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS supporters (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            nickname        TEXT NOT NULL UNIQUE,
+            email           TEXT NOT NULL UNIQUE,
+            whatsapp_number TEXT,
+            whatsapp_group  TEXT,
+            wants_community INTEGER NOT NULL DEFAULT 0,
+            ip_address      TEXT NOT NULL DEFAULT '',
+            is_founding     INTEGER NOT NULL DEFAULT 0,
+            created_at      TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+        CREATE TABLE IF NOT EXISTS admin_users (
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            username      TEXT NOT NULL UNIQUE,
+            password_hash TEXT NOT NULL,
+            created_at    TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+        CREATE TABLE IF NOT EXISTS rate_limits (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            ip_address TEXT NOT NULL,
+            action     TEXT NOT NULL DEFAULT 'register',
+            created_at TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+        CREATE INDEX IF NOT EXISTS idx_rl_ip_action ON rate_limits(ip_address, action);
+        CREATE INDEX IF NOT EXISTS idx_rl_created   ON rate_limits(created_at);
+        CREATE INDEX IF NOT EXISTS idx_sup_created  ON supporters(created_at);
+    ");
 }
 
 // ─── CSRF helpers ─────────────────────────────────────────────────────────────
@@ -49,26 +93,18 @@ function sanitize(string $str): string
 // ─── Rate limiting ────────────────────────────────────────────────────────────
 function check_rate_limit(PDO $db, string $ip): bool
 {
-    // Purge entries older than the window first
-    $stmt = $db->prepare(
-        'DELETE FROM rate_limits WHERE created_at < DATE_SUB(NOW(), INTERVAL :window SECOND)'
-    );
-    $stmt->execute([':window' => RATE_LIMIT_WINDOW]);
+    $cutoff = date('Y-m-d H:i:s', time() - RATE_LIMIT_WINDOW);
+
+    $stmt = $db->prepare('DELETE FROM rate_limits WHERE created_at < :cutoff');
+    $stmt->execute([':cutoff' => $cutoff]);
 
     $stmt = $db->prepare(
         'SELECT COUNT(*) FROM rate_limits
-          WHERE ip_address = :ip
-            AND action = :action
-            AND created_at >= DATE_SUB(NOW(), INTERVAL :window SECOND)'
+          WHERE ip_address = :ip AND action = :action AND created_at >= :cutoff'
     );
-    $stmt->execute([
-        ':ip'     => $ip,
-        ':action' => 'register',
-        ':window' => RATE_LIMIT_WINDOW,
-    ]);
-    $count = (int) $stmt->fetchColumn();
+    $stmt->execute([':ip' => $ip, ':action' => 'register', ':cutoff' => $cutoff]);
 
-    return $count < RATE_LIMIT_MAX;
+    return (int) $stmt->fetchColumn() < RATE_LIMIT_MAX;
 }
 
 function log_rate_limit(PDO $db, string $ip): void
