@@ -151,6 +151,7 @@ body { background: #000; color: #fff; overflow-x: hidden; }
     <div style="max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;height:52px;gap:32px;">
       <a href="index.php" class="font-bebas" style="font-size:1.4rem;color:#fff;text-decoration:none;letter-spacing:0.08em;transition:color 0.2s;" onmouseover="this.style.color='#ff003c'" onmouseout="this.style.color='#fff'">GUMBALKÁN</a>
       <a href="alps.php" class="font-oswald" style="font-size:0.8rem;color:#9ca3af;text-decoration:none;letter-spacing:0.25em;text-transform:uppercase;transition:color 0.2s;padding:4px 0;border-bottom:2px solid transparent;" onmouseover="this.style.color='#ff003c';this.style.borderBottomColor='#ff003c'" onmouseout="this.style.color='#9ca3af';this.style.borderBottomColor='transparent'">Training camp in the Alps</a>
+      <a href="support.php" class="font-oswald" style="font-size:0.8rem;color:#9ca3af;text-decoration:none;letter-spacing:0.25em;text-transform:uppercase;transition:color 0.2s;padding:4px 0;border-bottom:2px solid transparent;margin-left:auto;" onmouseover="this.style.color='#ff003c';this.style.borderBottomColor='#ff003c'" onmouseout="this.style.color='#9ca3af';this.style.borderBottomColor='transparent'">❤ Podpořte nás</a>
     </div>
   </nav>
   <div id="app-wrapper" class="w-full" style="height:100%; overflow-y:auto; overflow-x:hidden; padding-top:52px;"><!-- HERO -->
