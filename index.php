@@ -188,6 +188,31 @@ body { background: #000; color: #fff; overflow-x: hidden; }
      </div>
     </div>
    </section><!-- RED DIVIDER -->
+
+   <!-- STATS STRIP -->
+   <section class="w-full py-0" style="background:#050002;border-top:1px solid rgba(255,0,60,0.15);border-bottom:1px solid rgba(255,0,60,0.15);">
+    <div class="max-w-5xl mx-auto">
+     <div class="grid grid-cols-2 md:grid-cols-4">
+      <div class="reveal text-center py-10 px-4" style="border-right:1px solid rgba(255,0,60,0.12);">
+       <div class="countdown-num font-bebas text-6xl md:text-8xl text-white">~3000</div>
+       <div class="font-oswald text-xs tracking-[0.35em] text-red-500 uppercase mt-2">Kilometrů</div>
+      </div>
+      <div class="reveal text-center py-10 px-4" style="border-right:1px solid rgba(255,0,60,0.12);">
+       <div class="countdown-num font-bebas text-6xl md:text-8xl text-white">8+</div>
+       <div class="font-oswald text-xs tracking-[0.35em] text-red-500 uppercase mt-2">Zemí</div>
+      </div>
+      <div class="reveal text-center py-10 px-4" style="border-right:1px solid rgba(255,0,60,0.12);">
+       <div class="countdown-num font-bebas text-6xl md:text-8xl text-white">14</div>
+       <div class="font-oswald text-xs tracking-[0.35em] text-red-500 uppercase mt-2">Dní chaosu</div>
+      </div>
+      <div class="reveal text-center py-10 px-4">
+       <div class="countdown-num font-bebas text-6xl md:text-8xl text-white">4</div>
+       <div class="font-oswald text-xs tracking-[0.35em] text-red-500 uppercase mt-2">Blázni</div>
+      </div>
+     </div>
+    </div>
+   </section>
+
    <div class="red-line w-full"></div><!-- ABOUT SECTION -->
    <section class="w-full py-24 px-4 relative" style="background: linear-gradient(180deg, #0a0008 0%, #000 50%, #0a0008 100%); animation: sectionSlide 0.8s ease-out forwards; opacity: 0;">
     <div class="max-w-4xl mx-auto">
@@ -251,6 +276,102 @@ body { background: #000; color: #fff; overflow-x: hidden; }
      </div>
     </div>
    </section>
+   <div class="red-line w-full"></div><!-- ROUTE -->
+   <section class="w-full py-24 px-4 relative" style="background: linear-gradient(180deg, #000 0%, #060003 50%, #000 100%); overflow:hidden;">
+    <div class="max-w-6xl mx-auto">
+     <div class="reveal text-center mb-16">
+      <div class="font-oswald text-xs tracking-[0.4em] text-red-500 uppercase mb-4">// TRASA //</div>
+      <h2 class="font-bebas text-5xl md:text-7xl glitch-hover">KUDY JEDEME</h2>
+     </div>
+     <!-- Route timeline -->
+     <div class="reveal" style="overflow-x:auto;padding-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:0;min-width:900px;position:relative;padding:32px 0;">
+       <!-- Connecting line -->
+       <div style="position:absolute;top:50%;left:40px;right:40px;height:2px;background:linear-gradient(90deg,#ff003c,#ff6b35,#f59e0b,#10b981,#06b6d4,#8b5cf6,#ff003c);opacity:0.4;transform:translateY(-50%);z-index:0;"></div>
+       <!-- Stops -->
+       <?php
+       $stops = [
+         ['flag'=>'🇨🇿','country'=>'ČESKO',   'city'=>'Start',      'color'=>'#ff003c'],
+         ['flag'=>'🇭🇺','country'=>'MAĎARSKO', 'city'=>'Průjezd',    'color'=>'#ff6b35'],
+         ['flag'=>'🇷🇸','country'=>'SRBSKO',   'city'=>'Bělehrad',   'color'=>'#f59e0b'],
+         ['flag'=>'🇲🇰','country'=>'MAKEDONIE','city'=>'Skopje',     'color'=>'#10b981'],
+         ['flag'=>'🇦🇱','country'=>'ALBÁNIE',  'city'=>'Tirana',     'color'=>'#06b6d4'],
+         ['flag'=>'🇲🇪','country'=>'ČERNÁ HORA','city'=>'Kotor',     'color'=>'#8b5cf6'],
+         ['flag'=>'🇧🇦','country'=>'BOSNA',    'city'=>'Sarajevo',   'color'=>'#ec4899'],
+         ['flag'=>'🇭🇷','country'=>'CHORVATSKO','city'=>'Split',     'color'=>'#f97316'],
+         ['flag'=>'🇨🇿','country'=>'ČESKO',    'city'=>'Domů. Živí?','color'=>'#ff003c'],
+       ];
+       foreach ($stops as $i => $stop):
+       ?>
+       <div style="flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;<?= $i > 0 ? 'margin-left:-8px;' : '' ?>">
+        <div style="font-size:2rem;margin-bottom:10px;line-height:1;"><?= $stop['flag'] ?></div>
+        <div style="
+          width:36px;height:36px;border-radius:50%;
+          border:2px solid <?= $stop['color'] ?>;
+          background:rgba(0,0,0,0.9);
+          box-shadow:0 0 12px <?= $stop['color'] ?>66;
+          display:flex;align-items:center;justify-content:center;
+          font-family:'Bebas Neue',cursive;font-size:13px;color:<?= $stop['color'] ?>;
+          margin-bottom:10px;
+        "><?= $i + 1 ?></div>
+        <div class="font-bebas" style="font-size:.85rem;color:#fff;text-align:center;line-height:1.2;white-space:nowrap;"><?= $stop['country'] ?></div>
+        <div class="font-oswald" style="font-size:.6rem;letter-spacing:.15em;color:<?= $stop['color'] ?>;text-transform:uppercase;margin-top:3px;"><?= $stop['city'] ?></div>
+       </div>
+       <?php endforeach; ?>
+      </div>
+     </div>
+    </div>
+   </section>
+
+   <div class="red-line w-full"></div><!-- RULES -->
+   <section class="w-full py-24 px-4 relative" style="background: linear-gradient(180deg, #060003 0%, #000 100%);">
+    <div class="max-w-5xl mx-auto">
+     <div class="reveal text-center mb-16">
+      <div class="font-oswald text-xs tracking-[0.4em] text-red-500 uppercase mb-4">// KODEX //</div>
+      <h2 class="font-bebas text-5xl md:text-7xl glitch-hover">PRAVIDLA CHAOSU</h2>
+      <p class="font-elite text-gray-500 mt-4 text-lg">Málo jich je. Ale ty co jsou — platí.</p>
+     </div>
+     <div class="reveal grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div style="border:1px solid rgba(255,0,60,0.2);padding:24px;background:rgba(255,0,60,0.03);transition:all .3s;" onmouseover="this.style.borderColor='rgba(255,0,60,0.6)';this.style.background='rgba(255,0,60,0.07)'" onmouseout="this.style.borderColor='rgba(255,0,60,0.2)';this.style.background='rgba(255,0,60,0.03)'">
+       <div class="font-bebas text-4xl text-red-500 mb-2">01</div>
+       <div class="font-bebas text-2xl text-white mb-2">VRAK, NE LIMUZÍNA</div>
+       <div class="font-elite text-gray-400 text-sm leading-relaxed">Auto musí být starý vrak zakoupený za co nejméně peněz. Čím víc toho chybí, tím líp.</div>
+      </div>
+      <div style="border:1px solid rgba(255,0,60,0.2);padding:24px;background:rgba(255,0,60,0.03);transition:all .3s;" onmouseover="this.style.borderColor='rgba(255,0,60,0.6)';this.style.background='rgba(255,0,60,0.07)'" onmouseout="this.style.borderColor='rgba(255,0,60,0.2)';this.style.background='rgba(255,0,60,0.03)'">
+       <div class="font-bebas text-4xl text-red-500 mb-2">02</div>
+       <div class="font-bebas text-2xl text-white mb-2">ŽÁDNÝ HOTEL</div>
+       <div class="font-elite text-gray-400 text-sm leading-relaxed">Spíš kde to vyjde. Auto, stan, u cizinců, na střeše — vše je lepší než pohodlí.</div>
+      </div>
+      <div style="border:1px solid rgba(255,0,60,0.2);padding:24px;background:rgba(255,0,60,0.03);transition:all .3s;" onmouseover="this.style.borderColor='rgba(255,0,60,0.6)';this.style.background='rgba(255,0,60,0.07)'" onmouseout="this.style.borderColor='rgba(255,0,60,0.2)';this.style.background='rgba(255,0,60,0.03)'">
+       <div class="font-bebas text-4xl text-red-500 mb-2">03</div>
+       <div class="font-bebas text-2xl text-white mb-2">ŽÁDNÝ PLÁN</div>
+       <div class="font-elite text-gray-400 text-sm leading-relaxed">Směr znáš — Balkán. Co se stane cestou, to se stane. Adaptuj se nebo hni.</div>
+      </div>
+      <div style="border:1px solid rgba(255,0,60,0.2);padding:24px;background:rgba(255,0,60,0.03);transition:all .3s;" onmouseover="this.style.borderColor='rgba(255,0,60,0.6)';this.style.background='rgba(255,0,60,0.07)'" onmouseout="this.style.borderColor='rgba(255,0,60,0.2)';this.style.background='rgba(255,0,60,0.03)'">
+       <div class="font-bebas text-4xl text-red-500 mb-2">04</div>
+       <div class="font-bebas text-2xl text-white mb-2">DOKUMENTUJ VŠE</div>
+       <div class="font-elite text-gray-400 text-sm leading-relaxed">Každá katastrofa si zaslouží být zvěčněna. Kamera jede vždy. I když ty ne.</div>
+      </div>
+      <div style="border:1px solid rgba(255,0,60,0.2);padding:24px;background:rgba(255,0,60,0.03);transition:all .3s;" onmouseover="this.style.borderColor='rgba(255,0,60,0.6)';this.style.background='rgba(255,0,60,0.07)'" onmouseout="this.style.borderColor='rgba(255,0,60,0.2)';this.style.background='rgba(255,0,60,0.03)'">
+       <div class="font-bebas text-4xl text-red-500 mb-2">05</div>
+       <div class="font-bebas text-2xl text-white mb-2">ZÁCHRANA Z VLASTNÍCH SIL</div>
+       <div class="font-elite text-gray-400 text-sm leading-relaxed">Auto se pokazí? Opravíš ho sám. Izolepou, drátkem nebo modlitbou — ale sám.</div>
+      </div>
+      <div style="border:1px solid rgba(255,0,60,0.2);padding:24px;background:rgba(255,0,60,0.03);transition:all .3s;" onmouseover="this.style.borderColor='rgba(255,0,60,0.6)';this.style.background='rgba(255,0,60,0.07)'" onmouseout="this.style.borderColor='rgba(255,0,60,0.2)';this.style.background='rgba(255,0,60,0.03)'">
+       <div class="font-bebas text-4xl text-red-500 mb-2">06</div>
+       <div class="font-bebas text-2xl text-white mb-2">NIKDO NEJEDE SÁM</div>
+       <div class="font-elite text-gray-400 text-sm leading-relaxed">Banda jde nebo padá dohromady. Jeden se zasekne — ostatní čekají. Vždy.</div>
+      </div>
+     </div>
+     <div class="reveal text-center mt-12">
+      <div style="border:2px solid rgba(255,0,60,0.4);display:inline-block;padding:20px 40px;background:rgba(255,0,60,0.08);">
+       <p class="font-bebas text-3xl text-white">OSTATNÍ SI VYMYSLÍME ZA JÍZDY</p>
+       <p class="font-elite text-gray-500 mt-2">— jak to tak chodí</p>
+      </div>
+     </div>
+    </div>
+   </section>
+
    <div class="red-line w-full"></div><!-- MANIFESTO -->
    <section class="w-full py-20 px-4 relative" style="background: linear-gradient(180deg, #0a0008 0%, #000 100%);">
     <div class="max-w-4xl mx-auto text-center reveal">
@@ -466,6 +587,46 @@ body { background: #000; color: #fff; overflow-x: hidden; }
             
            -->
    </section>
+
+   <div class="red-line w-full"></div><!-- TRAINING CAMP TEASER -->
+   <section class="w-full py-24 px-4 relative" style="background:linear-gradient(135deg,#050002 0%,#0a0010 50%,#050002 100%);">
+    <div class="max-w-5xl mx-auto">
+     <div class="reveal">
+      <div class="flex flex-col md:flex-row gap-12 items-center">
+       <div class="flex-1">
+        <div class="font-oswald text-xs tracking-[0.4em] text-red-500 uppercase mb-4">// PŘÍPRAVA //</div>
+        <h2 class="font-bebas text-5xl md:text-7xl glitch-hover mb-6" style="line-height:1;">TRAINING CAMP<br><span style="color:#ff003c;">IN THE ALPS</span></h2>
+        <p class="font-elite text-gray-400 text-lg leading-relaxed mb-4">Před Balkánem přišly Alpy. Týden v horách, kde jsme zjistili co auto vydá, co vydržíme my a jak moc boli spát na kameních.</p>
+        <p class="font-elite text-gray-400 leading-relaxed mb-8">Grossglockner. Hallstatt. Gosausee. Čtyři dny. Čtyři blázni. Jedno auto.</p>
+        <div class="flex gap-4 flex-wrap">
+         <a href="alps.php" class="font-oswald font-bold px-8 py-3 bg-red-600 text-white uppercase tracking-wider hover:bg-white hover:text-black transition-all inline-block" style="clip-path:polygon(4% 0%,100% 0%,96% 100%,0% 100%);">ZOBRAZIT MAPU →</a>
+         <div class="font-oswald text-xs tracking-[0.2em] text-gray-600 uppercase self-center">27.–30. Května 2026</div>
+        </div>
+       </div>
+       <!-- Stats from alps -->
+       <div class="flex-shrink-0 grid grid-cols-2 gap-4 w-full md:w-72">
+        <div style="border:1px solid rgba(255,0,60,0.25);padding:20px 16px;text-align:center;background:rgba(255,0,60,0.03);">
+         <div class="font-bebas text-4xl text-white">4</div>
+         <div class="font-oswald text-xs tracking-[0.25em] text-red-500 uppercase mt-1">Dny</div>
+        </div>
+        <div style="border:1px solid rgba(255,0,60,0.25);padding:20px 16px;text-align:center;background:rgba(255,0,60,0.03);">
+         <div class="font-bebas text-4xl text-white">9</div>
+         <div class="font-oswald text-xs tracking-[0.25em] text-red-500 uppercase mt-1">Míst</div>
+        </div>
+        <div style="border:1px solid rgba(255,0,60,0.25);padding:20px 16px;text-align:center;background:rgba(255,0,60,0.03);">
+         <div class="font-bebas text-4xl text-white">1</div>
+         <div class="font-oswald text-xs tracking-[0.25em] text-red-500 uppercase mt-1">Grossglockner</div>
+        </div>
+        <div style="border:1px solid rgba(255,0,60,0.25);padding:20px 16px;text-align:center;background:rgba(255,0,60,0.03);">
+         <div class="font-bebas text-4xl text-white">∞</div>
+         <div class="font-oswald text-xs tracking-[0.25em] text-red-500 uppercase mt-1">Kamarádství</div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section>
+
    <div class="red-line w-full"></div><!-- COUNTDOWN -->
    <section id="countdown-section" class="w-full py-24 px-4 text-center relative" style="background: radial-gradient(ellipse at center, #1a0008 0%, #000 70%);">
     <div class="reveal">
@@ -636,6 +797,44 @@ body { background: #000; color: #fff; overflow-x: hidden; }
      </div>
     </div>
    </section>
+   <div class="red-line w-full"></div><!-- FOLLOW -->
+   <section class="w-full py-24 px-4 relative" style="background:radial-gradient(ellipse at center,#0d0005 0%,#000 70%);">
+    <div class="max-w-4xl mx-auto text-center reveal">
+     <div class="font-oswald text-xs tracking-[0.4em] text-red-500 uppercase mb-4">// SLEDUJ NAŽIVO //</div>
+     <h2 class="font-bebas text-5xl md:text-7xl glitch-hover mb-4">BUĎ U TOHO</h2>
+     <p class="font-elite text-gray-400 text-lg mb-12">Fotky, videa a živý chaos rovnou z trasy. Každý den nová katastrofa.</p>
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+      <a id="follow-instagram" href="https://instagram.com" target="_blank" rel="noopener noreferrer"
+         style="border:1px solid rgba(255,0,60,0.25);padding:32px 20px;display:block;text-decoration:none;transition:all .3s;background:rgba(255,0,60,0.03);"
+         onmouseover="this.style.borderColor='#ff003c';this.style.background='rgba(255,0,60,0.1)';this.style.transform='translateY(-4px)'"
+         onmouseout="this.style.borderColor='rgba(255,0,60,0.25)';this.style.background='rgba(255,0,60,0.03)';this.style.transform='translateY(0)'">
+       <i data-lucide="instagram" style="width:40px;height:40px;color:#ff003c;margin:0 auto 16px;display:block;"></i>
+       <div class="font-bebas text-2xl text-white mb-1">INSTAGRAM</div>
+       <div class="font-oswald text-xs tracking-[0.2em] text-gray-500 uppercase">Fotky a Stories</div>
+      </a>
+      <a id="follow-telegram" href="https://t.me" target="_blank" rel="noopener noreferrer"
+         style="border:1px solid rgba(255,0,60,0.25);padding:32px 20px;display:block;text-decoration:none;transition:all .3s;background:rgba(255,0,60,0.03);"
+         onmouseover="this.style.borderColor='#ff003c';this.style.background='rgba(255,0,60,0.1)';this.style.transform='translateY(-4px)'"
+         onmouseout="this.style.borderColor='rgba(255,0,60,0.25)';this.style.background='rgba(255,0,60,0.03)';this.style.transform='translateY(0)'">
+       <i data-lucide="send" style="width:40px;height:40px;color:#ff003c;margin:0 auto 16px;display:block;"></i>
+       <div class="font-bebas text-2xl text-white mb-1">TELEGRAM</div>
+       <div class="font-oswald text-xs tracking-[0.2em] text-gray-500 uppercase">Živé updaty z trasy</div>
+      </a>
+      <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"
+         style="border:1px solid rgba(255,0,60,0.25);padding:32px 20px;display:block;text-decoration:none;transition:all .3s;background:rgba(255,0,60,0.03);"
+         onmouseover="this.style.borderColor='#ff003c';this.style.background='rgba(255,0,60,0.1)';this.style.transform='translateY(-4px)'"
+         onmouseout="this.style.borderColor='rgba(255,0,60,0.25)';this.style.background='rgba(255,0,60,0.03)';this.style.transform='translateY(0)'">
+       <i data-lucide="youtube" style="width:40px;height:40px;color:#ff003c;margin:0 auto 16px;display:block;"></i>
+       <div class="font-bebas text-2xl text-white mb-1">YOUTUBE</div>
+       <div class="font-oswald text-xs tracking-[0.2em] text-gray-500 uppercase">Videa a dokumenty</div>
+      </a>
+     </div>
+     <div style="border-top:1px solid rgba(255,255,255,.05);padding-top:40px;">
+      <p class="font-elite text-gray-600 text-sm">Gumbalkán 2026 · Startujeme <span class="text-red-500">4. července</span> · Dojezd negarantujeme</p>
+     </div>
+    </div>
+   </section>
+
    <div class="red-line w-full"></div><!-- FOOTER -->
    <footer class="w-full py-16 px-4 text-center">
     <div class="reveal">
