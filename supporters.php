@@ -146,11 +146,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $supporter = $stmt->fetch();
 
         echo json_encode([
-            'success'   => true,
-            'message'   => $is_founding
+            'success'    => true,
+            'message'    => $is_founding
                 ? 'Vítej v posádce! Jsi Founding Supporter 🔥'
                 : 'Přidán/a do komunity! Vítej na palubě.',
-            'supporter' => $supporter,
+            'supporter'  => $supporter,
+            'group_url'  => WHATSAPP_GROUP_URL,
         ]);
     } catch (\Exception $e) {
         http_response_code(500);
@@ -436,6 +437,14 @@ html, body { min-height: 100%; background: #000; color: #fff; font-family: 'Oswa
       <!-- Messages -->
       <div id="form-message" style="display:none;padding:12px 16px;margin-bottom:20px;font-family:'Oswald',sans-serif;font-size:.85rem;letter-spacing:.1em;"></div>
 
+      <!-- WhatsApp skupina (zobrazí se po úspěšné registraci, pokud je nastavený odkaz) -->
+      <div id="wa-join-wrap" style="display:none;margin-bottom:20px;padding:18px 16px;border:1px solid rgba(37,211,102,0.4);background:rgba(37,211,102,0.08);text-align:center;">
+        <div style="font-family:'Oswald',sans-serif;font-size:.8rem;letter-spacing:.1em;color:#9ca3af;margin-bottom:12px;text-transform:uppercase;">Poslední krok — přidej se do WhatsApp skupiny</div>
+        <a id="wa-join-link" href="#" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;font-family:'Oswald',sans-serif;font-weight:700;padding:12px 22px;background:#25D366;color:#000;text-decoration:none;letter-spacing:.08em;text-transform:uppercase;clip-path:polygon(4% 0%,100% 0%,96% 100%,0% 100%);">
+          <i data-lucide="message-circle" style="width:20px;height:20px;"></i> Přidej se do skupiny
+        </a>
+      </div>
+
       <form id="reg-form" novalidate style="position:relative;">
         <!-- Honeypot -->
         <div class="hp-field" aria-hidden="true">
@@ -670,6 +679,17 @@ document.getElementById('reg-form').addEventListener('submit', async function(e)
     if (data.success) {
       showMessage(data.message, true);
       document.getElementById('reg-form').reset();
+
+      // WhatsApp skupina – pokud je nastavený odkaz, ukaž tlačítko pro připojení
+      if (data.group_url) {
+        const wrap = document.getElementById('wa-join-wrap');
+        const link = document.getElementById('wa-join-link');
+        if (wrap && link) {
+          link.href = data.group_url;
+          wrap.style.display = 'block';
+          wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
 
       // Prepend new card to feed
       if (data.supporter) {

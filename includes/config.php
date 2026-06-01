@@ -29,3 +29,11 @@ define('RATE_LIMIT_WINDOW', 3600);
 
 /** Session key used to store admin authentication state */
 define('ADMIN_SESSION_KEY', 'gumbalkan_admin');
+
+/**
+ * Odkaz na pozvánku do WhatsApp skupiny podporovatelů.
+ * Získáš ho ve WhatsApp: skupina → Pozvat odkazem → Kopírovat odkaz.
+ * Nech prázdné, dokud nemáš skupinu – tlačítko se pak nezobrazí.
+ * Příklad: 'https://chat.whatsapp.com/XXXXXXXXXXXXXXX'
+ */
+if (!defined('WHATSAPP_GROUP_URL')) define('WHATSAPP_GROUP_URL', '');

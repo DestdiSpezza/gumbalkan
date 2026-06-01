@@ -1,3 +1,15 @@
+<?php
+/* ─── Instagram reels / videa ──────────────────────────────────────────────
+   Sem vlož odkazy na svoje Instagram reels nebo příspěvky z @jedem_na_jedno.
+   Jak na to: na Instagramu otevři reel → ··· (tři tečky) → "Kopírovat odkaz".
+   Odkaz vlož do pole níže (klidně i s /?utm... na konci, ořízne se to samo).
+   Když přidáš nové video na Insta, prostě sem přidáš další řádek.            */
+$instagram_reels = [
+    // 'https://www.instagram.com/reel/XXXXXXXXXXX/',
+    // 'https://www.instagram.com/reel/YYYYYYYYYYY/',
+    // 'https://www.instagram.com/p/ZZZZZZZZZZZ/',
+];
+?>
 <!doctype html>
 <html lang="en" class="h-full">
  <head>
@@ -722,69 +734,41 @@ body { background: #000; color: #fff; overflow-x: hidden; }
      </div>
     </div>
    </section>
-   <div class="red-line w-full"></div><!-- VIDEO GALLERY -->
+   <div class="red-line w-full"></div><!-- VIDEO GALLERY (Instagram) -->
    <section class="w-full py-24 px-4 relative" style="background: linear-gradient(180deg, #000 0%, #0a0008 50%, #000 100%);">
     <div class="max-w-6xl mx-auto">
-     <div class="text-center reveal mb-16">
+     <div class="text-center reveal mb-12">
       <div class="font-oswald text-xs tracking-[0.4em] text-red-500 uppercase mb-2">
        // ZÁBĚRY //
       </div>
-      <h2 class="font-bebas text-5xl md:text-7xl mb-2 glitch-hover">VIDEÁ</h2>
+      <h2 class="font-bebas text-5xl md:text-7xl mb-3 glitch-hover">VIDEÁ</h2>
+      <a href="https://instagram.com/jedem_na_jedno" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 font-oswald text-sm tracking-[0.15em] uppercase" style="color:#ff003c;text-decoration:none;">
+       <i data-lucide="instagram" style="width:18px;height:18px;"></i> @jedem_na_jedno
+      </a>
      </div>
-     <div class="relative h-96 md:h-[32rem] flex items-center justify-center">
-      <div class="absolute inset-0 flex items-center justify-center">
-       <div class="relative w-full h-full max-w-4xl" id="video-carousel"><!-- Video items positioned in circle -->
-        <div class="video-item reveal absolute transition-all duration-500" style="width:320px;height:200px;left:50%;top:50%;transform:translate(-50%,-50%);z-index:50;">
-         <div class="w-full h-full bg-gradient-to-br from-gray-900 to-gray-800 border-3 border-red-600 flex items-center justify-center cursor-pointer group relative overflow-hidden hover:border-red-400">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <div class="relative z-10 text-center">
-           <div class="w-16 h-16 rounded-full border-2 border-red-500 flex items-center justify-center mx-auto mb-3 group-hover:bg-red-600 group-hover:scale-110 transition-all"><i data-lucide="play" style="width:28px;height:28px;color:#fff;"></i>
-           </div>
-           <div class="font-elite text-gray-300 text-sm">
-            VIDEO 01
-           </div>
-          </div>
-         </div>
-        </div>
-        <div class="video-item reveal absolute transition-all duration-500 opacity-60 hover:opacity-100" style="width:280px;height:175px;">
-         <div class="w-full h-full bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-gray-700 flex items-center justify-center cursor-pointer group relative overflow-hidden hover:border-red-500">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <div class="relative z-10 text-center">
-           <div class="w-12 h-12 rounded-full border-2 border-red-500 flex items-center justify-center mx-auto mb-2 group-hover:bg-red-600 group-hover:scale-110 transition-all"><i data-lucide="play" style="width:20px;height:20px;color:#ff003c;"></i>
-           </div>
-           <div class="font-elite text-gray-400 text-xs">
-            VIDEO 02
-           </div>
-          </div>
-         </div>
-        </div>
-        <div class="video-item reveal absolute transition-all duration-500 opacity-60 hover:opacity-100" style="width:280px;height:175px;">
-         <div class="w-full h-full bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-gray-700 flex items-center justify-center cursor-pointer group relative overflow-hidden hover:border-red-500">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <div class="relative z-10 text-center">
-           <div class="w-12 h-12 rounded-full border-2 border-red-500 flex items-center justify-center mx-auto mb-2 group-hover:bg-red-600 group-hover:scale-110 transition-all"><i data-lucide="play" style="width:20px;height:20px;color:#ff003c;"></i>
-           </div>
-           <div class="font-elite text-gray-400 text-xs">
-            VIDEO 03
-           </div>
-          </div>
-         </div>
-        </div>
-        <div class="video-item reveal absolute transition-all duration-500 opacity-60 hover:opacity-100" style="width:280px;height:175px;">
-         <div class="w-full h-full bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-gray-700 flex items-center justify-center cursor-pointer group relative overflow-hidden hover:border-red-500">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <div class="relative z-10 text-center">
-           <div class="w-12 h-12 rounded-full border-2 border-red-500 flex items-center justify-center mx-auto mb-2 group-hover:bg-red-600 group-hover:scale-110 transition-all"><i data-lucide="play" style="width:20px;height:20px;color:#ff003c;"></i>
-           </div>
-           <div class="font-elite text-gray-400 text-xs">
-            VIDEO 04
-           </div>
-          </div>
-         </div>
-        </div>
-       </div>
-      </div><!-- Navigation --> <button onclick="rotateCarousel(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 z-40 w-12 h-12 rounded-full border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center"> <i data-lucide="chevron-left" style="width:24px;height:24px;"></i> </button> <button onclick="rotateCarousel(1)" class="absolute right-4 top-1/2 -translate-y-1/2 z-40 w-12 h-12 rounded-full border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center"> <i data-lucide="chevron-right" style="width:24px;height:24px;"></i> </button>
+<?php if (!empty($instagram_reels)): ?>
+     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+<?php foreach ($instagram_reels as $url):
+        // ořízni query string a sjednoť tvar permalinku
+        $clean = preg_replace('/\?.*$/', '', trim($url));
+        $clean = rtrim($clean, '/') . '/';
+?>
+      <div class="reveal w-full max-w-[340px]" style="border:1px solid rgba(255,0,60,0.25);padding:6px;background:rgba(255,0,60,0.03);">
+       <blockquote class="instagram-media" data-instgrm-permalink="<?= htmlspecialchars($clean, ENT_QUOTES) ?>" data-instgrm-version="14" style="background:#000;border:0;margin:0;padding:0;width:100%;"></blockquote>
+      </div>
+<?php endforeach; ?>
      </div>
+     <script async src="https://www.instagram.com/embed.js"></script>
+<?php else: ?>
+     <div class="reveal max-w-2xl mx-auto text-center" style="border:1px dashed rgba(255,0,60,0.35);padding:48px 24px;background:rgba(255,0,60,0.03);">
+      <i data-lucide="film" style="width:44px;height:44px;color:#ff003c;margin:0 auto 16px;display:block;"></i>
+      <div class="font-bebas text-3xl text-white mb-2">ZATÍM SE NATÁČÍ</div>
+      <p class="font-elite text-gray-400 text-sm">Videa z trasy přibydou tady. Sleduj nás na Instagramu — všechno padá tam jako první.</p>
+      <a href="https://instagram.com/jedem_na_jedno" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 mt-6 font-oswald font-bold px-6 py-3 bg-red-600 text-white uppercase tracking-wider hover:bg-white hover:text-black transition-all" style="clip-path:polygon(4% 0%,100% 0%,96% 100%,0% 100%);text-decoration:none;">
+       <i data-lucide="instagram" style="width:20px;height:20px;"></i> Sleduj @jedem_na_jedno
+      </a>
+     </div>
+<?php endif; ?>
     </div>
    </section>
    <div class="red-line w-full"></div><!-- GALLERY -->
@@ -955,41 +939,6 @@ function tickCountdown() {
 }
 setInterval(tickCountdown, 1000);
 tickCountdown();
-
-// Video Carousel
-let currentVideoIndex = 0;
-const videoItems = document.querySelectorAll('.video-item');
-const totalVideos = videoItems.length;
-
-function updateCarouselPosition() {
-  const carouselRadius = 220;
-  const angleStep = (360 / totalVideos);
-  
-  videoItems.forEach((item, index) => {
-    const adjustedIndex = (index - currentVideoIndex + totalVideos) % totalVideos;
-    const angle = (adjustedIndex * angleStep - 90) * (Math.PI / 180);
-    
-    const x = Math.cos(angle) * carouselRadius;
-    const y = Math.sin(angle) * carouselRadius;
-    
-    const isCenter = adjustedIndex === 0;
-    const scale = isCenter ? 1 : 0.85;
-    const zIndex = isCenter ? 50 : 40 - adjustedIndex;
-    const opacity = isCenter ? 1 : 0.6;
-    
-    item.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${scale})`;
-    item.style.zIndex = zIndex;
-    item.style.opacity = opacity;
-  });
-}
-
-function rotateCarousel(direction) {
-  currentVideoIndex = (currentVideoIndex + direction + totalVideos) % totalVideos;
-  updateCarouselPosition();
-}
-
-// Initialize carousel
-updateCarouselPosition();
 
 // Scroll reveal
 const observer = new IntersectionObserver((entries) => {
