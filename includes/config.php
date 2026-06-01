@@ -5,11 +5,16 @@ declare(strict_types=1);
 // SQLite – cesta k souboru (automaticky se vytvoří)
 define('DB_SQLITE_PATH', __DIR__ . '/../database/gumbalkan.sqlite');
 
-// MySQL fallback (nech prázdné pro SQLite)
+// MySQL (vyplň zde nebo v config.local.php)
 define('DB_HOST', '');
 define('DB_NAME', '');
 define('DB_USER', '');
 define('DB_PASS', '');
+
+// Lokální přepsání credentials (gitignored)
+if (file_exists(__DIR__ . '/config.local.php')) {
+    require_once __DIR__ . '/config.local.php';
+}
 
 // ─── Application constants ────────────────────────────────────────────────────
 
