@@ -12,7 +12,7 @@ $success = null;
 // Check if any admin already exists
 try {
     $db    = get_db();
-    $count = (int)$db->query('SELECT COUNT(*) FROM admin_users')->fetchColumn();
+    $count = (int)$db->query('SELECT COUNT(*) FROM GUM_admin_users')->fetchColumn();
     if ($count > 0) {
         // Admin already exists — redirect to login
         header('Location: index.php?setup=already_done');
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
         } else {
             try {
                 $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
-                $stmt = $db->prepare('INSERT INTO admin_users (username, password_hash) VALUES (:u, :h)');
+                $stmt = $db->prepare('INSERT INTO GUM_admin_users (username, password_hash) VALUES (:u, :h)');
                 $stmt->execute([':u' => $username, ':h' => $hash]);
                 // Redirect to login with success flag
                 header('Location: index.php?setup=ok');

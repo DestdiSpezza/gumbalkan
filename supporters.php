@@ -102,14 +102,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Check duplicates
-    $stmt = $db->prepare('SELECT id FROM supporters WHERE nickname = :nickname LIMIT 1');
+    $stmt = $db->prepare('SELECT id FROM GUM_supporters WHERE nickname = :nickname LIMIT 1');
     $stmt->execute([':nickname' => $nickname]);
     if ($stmt->fetch()) {
         echo json_encode(['success' => false, 'message' => 'Tato přezdívka je již obsazena. Zvolte jinou.', 'field' => 'nickname']);
         exit;
     }
 
-    $stmt = $db->prepare('SELECT id FROM supporters WHERE email = :email LIMIT 1');
+    $stmt = $db->prepare('SELECT id FROM GUM_supporters WHERE email = :email LIMIT 1');
     $stmt->execute([':email' => $email]);
     if ($stmt->fetch()) {
         echo json_encode(['success' => false, 'message' => 'Tento e-mail je již registrován.', 'field' => 'email']);
@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // 6. Insert
     try {
         $stmt = $db->prepare(
-            'INSERT INTO supporters (nickname, email, whatsapp_number, whatsapp_group, wants_community, ip_address, is_founding)
+            'INSERT INTO GUM_supporters (nickname, email, whatsapp_number, whatsapp_group, wants_community, ip_address, is_founding)
              VALUES (:nickname, :email, :whatsapp_number, :whatsapp_group, :wants_community, :ip_address, :is_founding)'
         );
         $stmt->execute([
@@ -141,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         log_rate_limit($db, $ip);
 
         // Fetch the inserted row for response
-        $stmt = $db->prepare('SELECT id, nickname, is_founding, created_at FROM supporters WHERE id = :id');
+        $stmt = $db->prepare('SELECT id, nickname, is_founding, created_at FROM GUM_supporters WHERE id = :id');
         $stmt->execute([':id' => $new_id]);
         $supporter = $stmt->fetch();
 

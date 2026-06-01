@@ -34,7 +34,7 @@ function get_db(): PDO
 function _init_sqlite(PDO $pdo): void
 {
     $pdo->exec("
-        CREATE TABLE IF NOT EXISTS supporters (
+        CREATE TABLE IF NOT EXISTS GUM_supporters (
             id              INTEGER PRIMARY KEY AUTOINCREMENT,
             nickname        TEXT NOT NULL UNIQUE,
             email           TEXT NOT NULL UNIQUE,
@@ -45,21 +45,21 @@ function _init_sqlite(PDO $pdo): void
             is_founding     INTEGER NOT NULL DEFAULT 0,
             created_at      TEXT NOT NULL DEFAULT (datetime('now'))
         );
-        CREATE TABLE IF NOT EXISTS admin_users (
+        CREATE TABLE IF NOT EXISTS GUM_admin_users (
             id            INTEGER PRIMARY KEY AUTOINCREMENT,
             username      TEXT NOT NULL UNIQUE,
             password_hash TEXT NOT NULL,
             created_at    TEXT NOT NULL DEFAULT (datetime('now'))
         );
-        CREATE TABLE IF NOT EXISTS rate_limits (
+        CREATE TABLE IF NOT EXISTS GUM_rate_limits (
             id         INTEGER PRIMARY KEY AUTOINCREMENT,
             ip_address TEXT NOT NULL,
             action     TEXT NOT NULL DEFAULT 'register',
             created_at TEXT NOT NULL DEFAULT (datetime('now'))
         );
-        CREATE INDEX IF NOT EXISTS idx_rl_ip_action ON rate_limits(ip_address, action);
-        CREATE INDEX IF NOT EXISTS idx_rl_created   ON rate_limits(created_at);
-        CREATE INDEX IF NOT EXISTS idx_sup_created  ON supporters(created_at);
+        CREATE INDEX IF NOT EXISTS idx_rl_ip_action ON GUM_rate_limits(ip_address, action);
+        CREATE INDEX IF NOT EXISTS idx_rl_created   ON GUM_rate_limits(created_at);
+        CREATE INDEX IF NOT EXISTS idx_sup_created  ON GUM_supporters(created_at);
     ");
 }
 
@@ -95,11 +95,11 @@ function check_rate_limit(PDO $db, string $ip): bool
 {
     $cutoff = date('Y-m-d H:i:s', time() - RATE_LIMIT_WINDOW);
 
-    $stmt = $db->prepare('DELETE FROM rate_limits WHERE created_at < :cutoff');
+    $stmt = $db->prepare('DELETE FROM GUM_rate_limits WHERE created_at < :cutoff');
     $stmt->execute([':cutoff' => $cutoff]);
 
     $stmt = $db->prepare(
-        'SELECT COUNT(*) FROM rate_limits
+        'SELECT COUNT(*) FROM GUM_rate_limits
           WHERE ip_address = :ip AND action = :action AND created_at >= :cutoff'
     );
     $stmt->execute([':ip' => $ip, ':action' => 'register', ':cutoff' => $cutoff]);
@@ -110,7 +110,7 @@ function check_rate_limit(PDO $db, string $ip): bool
 function log_rate_limit(PDO $db, string $ip): void
 {
     $stmt = $db->prepare(
-        'INSERT INTO rate_limits (ip_address, action) VALUES (:ip, :action)'
+        'INSERT INTO GUM_rate_limits (ip_address, action) VALUES (:ip, :action)'
     );
     $stmt->execute([':ip' => $ip, ':action' => 'register']);
 }
@@ -142,7 +142,7 @@ function get_supporters(PDO $db, int $page, int $per_page = 20): array
     $offset = ($page - 1) * $per_page;
     $stmt = $db->prepare(
         'SELECT id, nickname, is_founding, created_at
-           FROM supporters
+           FROM GUM_supporters
           ORDER BY created_at DESC
           LIMIT :limit OFFSET :offset'
     );
@@ -154,13 +154,13 @@ function get_supporters(PDO $db, int $page, int $per_page = 20): array
 
 function get_total_count(PDO $db): int
 {
-    return (int) $db->query('SELECT COUNT(*) FROM supporters')->fetchColumn();
+    return (int) $db->query('SELECT COUNT(*) FROM GUM_supporters')->fetchColumn();
 }
 
 function get_recent_ticker(PDO $db, int $limit = 10): array
 {
     $stmt = $db->prepare(
-        'SELECT nickname FROM supporters ORDER BY created_at DESC LIMIT :limit'
+        'SELECT nickname FROM GUM_supporters ORDER BY created_at DESC LIMIT :limit'
     );
     $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
     $stmt->execute();

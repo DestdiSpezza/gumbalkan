@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         try {
             $db   = get_db();
-            $stmt = $db->prepare('SELECT id, username, password_hash FROM admin_users WHERE username = :u LIMIT 1');
+            $stmt = $db->prepare('SELECT id, username, password_hash FROM GUM_admin_users WHERE username = :u LIMIT 1');
             $stmt->execute([':u' => $username]);
             $user = $stmt->fetch();
 
@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($id > 0) {
             try {
                 $db   = get_db();
-                $stmt = $db->prepare('DELETE FROM supporters WHERE id = :id');
+                $stmt = $db->prepare('DELETE FROM GUM_supporters WHERE id = :id');
                 $stmt->execute([':id' => $id]);
                 $_SESSION['flash_success'] = 'Člen smazán.';
             } catch (\Exception $e) {
@@ -101,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         try {
             $db   = get_db();
-            $stmt = $db->prepare('UPDATE supporters SET nickname = :nick WHERE id = :id');
+            $stmt = $db->prepare('UPDATE GUM_supporters SET nickname = :nick WHERE id = :id');
             $stmt->execute([':nick' => $new_nick, ':id' => $id]);
             $_SESSION['flash_success'] = 'Přezdívka změněna.';
         } catch (\Exception $e) {
@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['action'] ?? '') === 'export'
         $db      = get_db();
         $results = $db->query(
             'SELECT id, nickname, email, whatsapp_number, whatsapp_group, wants_community, is_founding, ip_address, created_at
-               FROM supporters ORDER BY created_at DESC'
+               FROM GUM_supporters ORDER BY created_at DESC'
         )->fetchAll();
     } catch (\Exception $e) {
         $results = [];
@@ -168,17 +168,17 @@ if (is_admin()) {
         $db = get_db();
 
         // Stats
-        $stats['total']     = (int)$db->query('SELECT COUNT(*) FROM supporters')->fetchColumn();
-        $stats['founding']  = (int)$db->query('SELECT COUNT(*) FROM supporters WHERE is_founding = 1')->fetchColumn();
-        $stats['community'] = (int)$db->query('SELECT COUNT(*) FROM supporters WHERE wants_community = 1')->fetchColumn();
-        $stats['today']     = (int)$db->query("SELECT COUNT(*) FROM supporters WHERE DATE(created_at) = CURDATE()")->fetchColumn();
+        $stats['total']     = (int)$db->query('SELECT COUNT(*) FROM GUM_supporters')->fetchColumn();
+        $stats['founding']  = (int)$db->query('SELECT COUNT(*) FROM GUM_supporters WHERE is_founding = 1')->fetchColumn();
+        $stats['community'] = (int)$db->query('SELECT COUNT(*) FROM GUM_supporters WHERE wants_community = 1')->fetchColumn();
+        $stats['today']     = (int)$db->query("SELECT COUNT(*) FROM GUM_supporters WHERE DATE(created_at) = CURDATE()")->fetchColumn();
 
         $total_rows = $stats['total'];
         $offset     = ($page - 1) * $per_page;
 
         $stmt = $db->prepare(
             'SELECT id, nickname, email, whatsapp_number, whatsapp_group, wants_community, is_founding, ip_address, created_at
-               FROM supporters
+               FROM GUM_supporters
               ORDER BY created_at DESC
               LIMIT :limit OFFSET :offset'
         );

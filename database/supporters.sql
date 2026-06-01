@@ -6,7 +6,7 @@ SET CHARACTER SET utf8mb4;
 SET character_set_connection = utf8mb4;
 
 -- ─── supporters ──────────────────────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS `supporters` (
+CREATE TABLE IF NOT EXISTS `GUM_supporters` (
   `id`               INT UNSIGNED    NOT NULL AUTO_INCREMENT,
   `nickname`         VARCHAR(50)     NOT NULL,
   `email`            VARCHAR(255)    NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `supporters` (
   COLLATE=utf8mb4_unicode_ci;
 
 -- ─── admin_users ─────────────────────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS `admin_users` (
+CREATE TABLE IF NOT EXISTS `GUM_admin_users` (
   `id`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `username`      VARCHAR(100) NOT NULL,
   `password_hash` VARCHAR(255) NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `admin_users` (
   COLLATE=utf8mb4_unicode_ci;
 
 -- ─── rate_limits ─────────────────────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS `rate_limits` (
+CREATE TABLE IF NOT EXISTS `GUM_rate_limits` (
   `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `ip_address` VARCHAR(45)  NOT NULL,
   `action`     VARCHAR(50)  NOT NULL DEFAULT 'register',
