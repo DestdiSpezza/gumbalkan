@@ -36,4 +36,4 @@ define('ADMIN_SESSION_KEY', 'gumbalkan_admin');
  * Nech prázdné, dokud nemáš skupinu – tlačítko se pak nezobrazí.
  * Příklad: 'https://chat.whatsapp.com/XXXXXXXXXXXXXXX'
  */
-if (!defined('WHATSAPP_GROUP_URL')) define('WHATSAPP_GROUP_URL', '');
+if (!defined('WHATSAPP_GROUP_URL')) define('WHATSAPP_GROUP_URL', 'https://chat.whatsapp.com/KjzkcIXfxGQL4PExzjt8a0');
