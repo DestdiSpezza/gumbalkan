@@ -87,6 +87,50 @@ body { background: #000; color: #fff; overflow-x: hidden; }
 .glitch-hover:hover { animation: glitchX 0.15s infinite; }
 .shake-hover:hover { animation: shake 0.1s infinite; }
 
+/* Navigace – animovaný odkaz */
+.nav-link {
+  position: relative;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  text-decoration: none;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  padding: 6px 2px;
+  transition: color 0.25s ease, letter-spacing 0.25s ease, text-shadow 0.25s ease;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: #ff003c;
+  box-shadow: 0 0 8px #ff003c;
+  transform: translateX(-50%);
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-link:hover {
+  color: #ff003c;
+  letter-spacing: 0.32em;
+  text-shadow: 0 0 12px rgba(255,0,60,0.6);
+}
+.nav-link:hover::after { width: 100%; }
+.nav-brand {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  transition: color 0.25s ease, text-shadow 0.25s ease, transform 0.25s ease;
+}
+.nav-brand:hover {
+  color: #ff003c;
+  text-shadow: 0 0 16px rgba(255,0,60,0.7);
+  transform: scale(1.05);
+}
+
 .reveal { opacity: 0; transform: translateY(60px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
@@ -148,10 +192,11 @@ body { background: #000; color: #fff; overflow-x: hidden; }
   <div class="noise-overlay"></div>
   <!-- NAV -->
   <nav style="position:fixed;top:0;left:0;width:100%;z-index:10000;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,0,60,0.2);">
-    <div style="max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;height:52px;gap:32px;">
-      <a href="index.php" class="font-bebas" style="font-size:1.4rem;color:#fff;text-decoration:none;letter-spacing:0.08em;transition:color 0.2s;" onmouseover="this.style.color='#ff003c'" onmouseout="this.style.color='#fff'">GUMBALKÁN</a>
-      <a href="alps.php" class="font-oswald" style="font-size:0.8rem;color:#9ca3af;text-decoration:none;letter-spacing:0.25em;text-transform:uppercase;transition:color 0.2s;padding:4px 0;border-bottom:2px solid transparent;" onmouseover="this.style.color='#ff003c';this.style.borderBottomColor='#ff003c'" onmouseout="this.style.color='#9ca3af';this.style.borderBottomColor='transparent'">Training camp in the Alps</a>
-      <a href="support.php" class="font-oswald" style="font-size:0.8rem;color:#9ca3af;text-decoration:none;letter-spacing:0.25em;text-transform:uppercase;transition:color 0.2s;padding:4px 0;border-bottom:2px solid transparent;margin-left:auto;" onmouseover="this.style.color='#ff003c';this.style.borderBottomColor='#ff003c'" onmouseout="this.style.color='#9ca3af';this.style.borderBottomColor='transparent'">❤ Podpořte nás</a>
+    <div style="max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;height:auto;min-height:52px;gap:16px 28px;">
+      <a href="index.php" class="nav-brand">GUMBALKÁN</a>
+      <a href="alps.php" class="nav-link">Training camp in the Alps</a>
+      <a href="supporters.php" class="nav-link">Supporters</a>
+      <a href="support.php" class="nav-link">❤ Podpořte nás</a>
     </div>
   </nav>
   <div id="app-wrapper" class="w-full" style="height:100%; overflow-y:auto; overflow-x:hidden; padding-top:52px;"><!-- HERO -->
@@ -183,7 +228,7 @@ body { background: #000; color: #fff; overflow-x: hidden; }
      <p id="hero-tagline" class="mt-6 font-elite text-lg md:text-2xl text-gray-400" style="animation: slideUp 1s 0.5s both;">Když se cesta stává cílem a splněným snem.</p>
      <div class="mt-10 flex gap-4"><button onclick="document.getElementById('countdown-section').scrollIntoView({behavior:'smooth'})" class="font-oswald font-bold px-8 py-3 bg-red-600 text-white uppercase tracking-wider hover:bg-white hover:text-black transition-all shake-hover" style="clip-path: polygon(4% 0%, 100% 0%, 96% 100%, 0% 100%); animation: heartbeat 2s infinite;"> ODPOČÍTÁVÁNÍ </button>
      </div>
-     <div class="mt-12 flex justify-center gap-6"><a id="hero-instagram" href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="glitch-hover cursor-pointer"><i data-lucide="instagram" style="width:28px;height:28px;color:#ff003c;"></i></a> <a id="hero-telegram" href="https://t.me" target="_blank" rel="noopener noreferrer" class="glitch-hover cursor-pointer"><i data-lucide="send" style="width:28px;height:28px;color:#ff003c;"></i></a> <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="glitch-hover cursor-pointer"><i data-lucide="facebook" style="width:28px;height:28px;color:#ff003c;"></i></a>
+     <div class="mt-12 flex justify-center gap-3 items-center"><a id="hero-instagram" href="https://instagram.com/jedem_na_jedno" target="_blank" rel="noopener noreferrer" class="glitch-hover cursor-pointer flex items-center gap-2" style="color:#ff003c;text-decoration:none;"><i data-lucide="instagram" style="width:28px;height:28px;color:#ff003c;"></i><span class="font-oswald" style="font-size:0.95rem;letter-spacing:0.05em;">@jedem_na_jedno</span></a>
      </div><!-- Scroll indicator -->
      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce"><i data-lucide="chevrons-down" style="width:32px;height:32px;color:#ff003c;"></i>
      </div>
@@ -296,7 +341,7 @@ body { background: #000; color: #fff; overflow-x: hidden; }
          ['flag'=>'🇸🇰','country'=>'SLOVENSKO', 'city'=>'Průjezd',       'color'=>'#ff6b35'],
          ['flag'=>'🇭🇺','country'=>'MAĎARSKO',  'city'=>'Průjezd',       'color'=>'#f59e0b'],
          ['flag'=>'🇭🇷','country'=>'CHORVATSKO','city'=>'Průjezd',        'color'=>'#06b6d4'],
-         ['flag'=>'🇧🇦','country'=>'BOSNA',     'city'=>'Cíl · Sarajevo','color'=>'#10b981'],
+         ['flag'=>'🇧🇦','country'=>'BOSNA',     'city'=>'Cíl · někde v Bosně 🤷','color'=>'#10b981'],
          ['flag'=>'🇨🇿','country'=>'ČESKO',     'city'=>'Domů. Živí?',   'color'=>'#ff003c'],
        ];
        foreach ($stops as $i => $stop):
@@ -801,30 +846,14 @@ body { background: #000; color: #fff; overflow-x: hidden; }
      <div class="font-oswald text-xs tracking-[0.4em] text-red-500 uppercase mb-4">// SLEDUJ NAŽIVO //</div>
      <h2 class="font-bebas text-5xl md:text-7xl glitch-hover mb-4">BUĎ U TOHO</h2>
      <p class="font-elite text-gray-400 text-lg mb-12">Fotky, videa a živý chaos rovnou z trasy. Každý den nová katastrofa.</p>
-     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-      <a id="follow-instagram" href="https://instagram.com" target="_blank" rel="noopener noreferrer"
-         style="border:1px solid rgba(255,0,60,0.25);padding:32px 20px;display:block;text-decoration:none;transition:all .3s;background:rgba(255,0,60,0.03);"
+     <div class="flex justify-center mb-12">
+      <a id="follow-instagram" href="https://instagram.com/jedem_na_jedno" target="_blank" rel="noopener noreferrer"
+         style="border:1px solid rgba(255,0,60,0.25);padding:40px 48px;display:block;text-decoration:none;transition:all .3s;background:rgba(255,0,60,0.03);max-width:420px;width:100%;"
          onmouseover="this.style.borderColor='#ff003c';this.style.background='rgba(255,0,60,0.1)';this.style.transform='translateY(-4px)'"
          onmouseout="this.style.borderColor='rgba(255,0,60,0.25)';this.style.background='rgba(255,0,60,0.03)';this.style.transform='translateY(0)'">
-       <i data-lucide="instagram" style="width:40px;height:40px;color:#ff003c;margin:0 auto 16px;display:block;"></i>
-       <div class="font-bebas text-2xl text-white mb-1">INSTAGRAM</div>
-       <div class="font-oswald text-xs tracking-[0.2em] text-gray-500 uppercase">Fotky a Stories</div>
-      </a>
-      <a id="follow-telegram" href="https://t.me" target="_blank" rel="noopener noreferrer"
-         style="border:1px solid rgba(255,0,60,0.25);padding:32px 20px;display:block;text-decoration:none;transition:all .3s;background:rgba(255,0,60,0.03);"
-         onmouseover="this.style.borderColor='#ff003c';this.style.background='rgba(255,0,60,0.1)';this.style.transform='translateY(-4px)'"
-         onmouseout="this.style.borderColor='rgba(255,0,60,0.25)';this.style.background='rgba(255,0,60,0.03)';this.style.transform='translateY(0)'">
-       <i data-lucide="send" style="width:40px;height:40px;color:#ff003c;margin:0 auto 16px;display:block;"></i>
-       <div class="font-bebas text-2xl text-white mb-1">TELEGRAM</div>
-       <div class="font-oswald text-xs tracking-[0.2em] text-gray-500 uppercase">Živé updaty z trasy</div>
-      </a>
-      <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"
-         style="border:1px solid rgba(255,0,60,0.25);padding:32px 20px;display:block;text-decoration:none;transition:all .3s;background:rgba(255,0,60,0.03);"
-         onmouseover="this.style.borderColor='#ff003c';this.style.background='rgba(255,0,60,0.1)';this.style.transform='translateY(-4px)'"
-         onmouseout="this.style.borderColor='rgba(255,0,60,0.25)';this.style.background='rgba(255,0,60,0.03)';this.style.transform='translateY(0)'">
-       <i data-lucide="youtube" style="width:40px;height:40px;color:#ff003c;margin:0 auto 16px;display:block;"></i>
-       <div class="font-bebas text-2xl text-white mb-1">YOUTUBE</div>
-       <div class="font-oswald text-xs tracking-[0.2em] text-gray-500 uppercase">Videa a dokumenty</div>
+       <i data-lucide="instagram" style="width:48px;height:48px;color:#ff003c;margin:0 auto 16px;display:block;"></i>
+       <div class="font-bebas text-3xl text-white mb-1">@jedem_na_jedno</div>
+       <div class="font-oswald text-xs tracking-[0.2em] text-gray-500 uppercase">Fotky, Stories a živý chaos z trasy</div>
       </a>
      </div>
      <div style="border-top:1px solid rgba(255,255,255,.05);padding-top:40px;">
@@ -840,7 +869,7 @@ body { background: #000; color: #fff; overflow-x: hidden; }
       JEDEME NA JEDNO
      </div>
      <p class="font-elite text-gray-600 text-sm">Když je cesta cílem</p>
-     <div class="mt-6 flex justify-center gap-6"><a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="glitch-hover cursor-pointer"><i data-lucide="instagram" style="width:24px;height:24px;color:#ff003c;"></i></a> <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="glitch-hover cursor-pointer"><i data-lucide="youtube" style="width:24px;height:24px;color:#ff003c;"></i></a> <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="glitch-hover cursor-pointer"><i data-lucide="facebook" style="width:24px;height:24px;color:#ff003c;"></i></a>
+     <div class="mt-6 flex justify-center"><a href="https://instagram.com/jedem_na_jedno" target="_blank" rel="noopener noreferrer" class="glitch-hover cursor-pointer flex items-center gap-2" style="color:#ff003c;text-decoration:none;"><i data-lucide="instagram" style="width:24px;height:24px;color:#ff003c;"></i><span class="font-oswald" style="font-size:0.85rem;letter-spacing:0.05em;">@jedem_na_jedno</span></a>
      </div>
      <div class="mt-8 font-oswald text-xs tracking-[0.3em] text-gray-700 uppercase">
       © 2026 Jedeme na jedno · Veškerý chaos vyhrazen
@@ -852,8 +881,7 @@ body { background: #000; color: #fff; overflow-x: hidden; }
 const defaultConfig = {
   hero_title: 'GUMBALKAN 2026',
   hero_tagline: 'No rules. No plan. Just the road.',
-  instagram_url: 'https://instagram.com',
-  telegram_url: 'https://t.me',
+  instagram_url: 'https://instagram.com/jedem_na_jedno',
   countdown_date: '2026-07-04',
   background_color: '#000000',
   accent_color: '#ff003c',
@@ -872,9 +900,10 @@ function applyConfig(config) {
 
   // Update social links
   const instagramLink = document.getElementById('hero-instagram');
-  const telegramLink = document.getElementById('hero-telegram');
-  if (instagramLink) instagramLink.href = config.instagram_url || defaultConfig.instagram_url;
-  if (telegramLink) telegramLink.href = config.telegram_url || defaultConfig.telegram_url;
+  const followInstagram = document.getElementById('follow-instagram');
+  const igUrl = config.instagram_url || defaultConfig.instagram_url;
+  if (instagramLink) instagramLink.href = igUrl;
+  if (followInstagram) followInstagram.href = igUrl;
 
   // Colors
   const accent = config.accent_color || defaultConfig.accent_color;
@@ -991,7 +1020,6 @@ window.elementSdk.init({
     ['hero_title', config.hero_title || defaultConfig.hero_title],
     ['hero_tagline', config.hero_tagline || defaultConfig.hero_tagline],
     ['instagram_url', config.instagram_url || defaultConfig.instagram_url],
-    ['telegram_url', config.telegram_url || defaultConfig.telegram_url],
     ['countdown_date', config.countdown_date || defaultConfig.countdown_date],
   ])
 });

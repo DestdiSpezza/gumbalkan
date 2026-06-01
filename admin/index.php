@@ -171,7 +171,10 @@ if (is_admin()) {
         $stats['total']     = (int)$db->query('SELECT COUNT(*) FROM GUM_supporters')->fetchColumn();
         $stats['founding']  = (int)$db->query('SELECT COUNT(*) FROM GUM_supporters WHERE is_founding = 1')->fetchColumn();
         $stats['community'] = (int)$db->query('SELECT COUNT(*) FROM GUM_supporters WHERE wants_community = 1')->fetchColumn();
-        $stats['today']     = (int)$db->query("SELECT COUNT(*) FROM GUM_supporters WHERE DATE(created_at) = CURDATE()")->fetchColumn();
+        $today_start = date('Y-m-d 00:00:00');
+        $stmt_today  = $db->prepare("SELECT COUNT(*) FROM GUM_supporters WHERE created_at >= :start");
+        $stmt_today->execute([':start' => $today_start]);
+        $stats['today'] = (int)$stmt_today->fetchColumn();
 
         $total_rows = $stats['total'];
         $offset     = ($page - 1) * $per_page;
