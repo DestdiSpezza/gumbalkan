@@ -57,6 +57,12 @@ function _init_sqlite(PDO $pdo): void
             action     TEXT NOT NULL DEFAULT 'register',
             created_at TEXT NOT NULL DEFAULT (datetime('now'))
         );
+        CREATE TABLE IF NOT EXISTS GUM_reels (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            url        TEXT NOT NULL,
+            sort_order INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL DEFAULT (datetime('now'))
+        );
         CREATE INDEX IF NOT EXISTS idx_rl_ip_action ON GUM_rate_limits(ip_address, action);
         CREATE INDEX IF NOT EXISTS idx_rl_created   ON GUM_rate_limits(created_at);
         CREATE INDEX IF NOT EXISTS idx_sup_created  ON GUM_supporters(created_at);
@@ -165,6 +171,46 @@ function get_recent_ticker(PDO $db, int $limit = 10): array
     $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
+
+// ─── Instagram reels ──────────────────────────────────────────────────────────
+function get_reels(PDO $db): array
+{
+    return $db->query(
+        'SELECT id, url FROM GUM_reels ORDER BY sort_order ASC, id ASC'
+    )->fetchAll();
+}
+
+/** Normalizuj Instagram URL na čistý permalink (bez query stringu). */
+function normalize_reel_url(string $url): string
+{
+    $url = trim($url);
+    $url = preg_replace('/[?#].*$/', '', $url);
+    return rtrim($url, '/') . '/';
+}
+
+/** Vrátí true, pokud jde o validní Instagram reel/post URL. */
+function is_valid_reel_url(string $url): bool
+{
+    return (bool) preg_match(
+        '#^https?://(www\.)?instagram\.com/(reel|reels|p|tv)/[A-Za-z0-9_\-]+/?$#',
+        $url
+    );
+}
+
+function add_reel(PDO $db, string $url): void
+{
+    $stmt = $db->prepare(
+        'INSERT INTO GUM_reels (url, sort_order) VALUES (:url, :sort)'
+    );
+    $next = (int) $db->query('SELECT COALESCE(MAX(sort_order), 0) + 1 FROM GUM_reels')->fetchColumn();
+    $stmt->execute([':url' => $url, ':sort' => $next]);
+}
+
+function delete_reel(PDO $db, int $id): void
+{
+    $stmt = $db->prepare('DELETE FROM GUM_reels WHERE id = :id');
+    $stmt->execute([':id' => $id]);
 }
 
 // ─── Human-readable time (Czech) ─────────────────────────────────────────────

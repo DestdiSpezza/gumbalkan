@@ -49,3 +49,15 @@ CREATE TABLE IF NOT EXISTS `GUM_rate_limits` (
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci;
+
+-- ─── reels (Instagram videa spravovaná z adminu) ───────────────────────────────
+CREATE TABLE IF NOT EXISTS `GUM_reels` (
+  `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `url`        VARCHAR(255) NOT NULL,
+  `sort_order` INT          NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_sort_order` (`sort_order`)
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;

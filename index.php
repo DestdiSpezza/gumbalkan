@@ -1,14 +1,16 @@
 <?php
 /* ─── Instagram reels / videa ──────────────────────────────────────────────
-   Sem vlož odkazy na svoje Instagram reels nebo příspěvky z @jedem_na_jedno.
-   Jak na to: na Instagramu otevři reel → ··· (tři tečky) → "Kopírovat odkaz".
-   Odkaz vlož do pole níže (klidně i s /?utm... na konci, ořízne se to samo).
-   Když přidáš nové video na Insta, prostě sem přidáš další řádek.            */
-$instagram_reels = [
-    // 'https://www.instagram.com/reel/XXXXXXXXXXX/',
-    // 'https://www.instagram.com/reel/YYYYYYYYYYY/',
-    // 'https://www.instagram.com/p/ZZZZZZZZZZZ/',
-];
+   Videa se spravují z admin panelu (admin/index.php → INSTAGRAM REELS).
+   Tady se jen načtou z databáze a vykreslí v sekci VIDEÁ.                   */
+require_once __DIR__ . '/includes/db.php';
+$instagram_reels = [];
+try {
+    foreach (get_reels(get_db()) as $r) {
+        $instagram_reels[] = $r['url'];
+    }
+} catch (\Throwable $e) {
+    $instagram_reels = []; // DB nedostupná → ukáže se prázdný stav
+}
 ?>
 <!doctype html>
 <html lang="en" class="h-full">

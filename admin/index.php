@@ -109,6 +109,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         redirect('index.php');
     }
+
+    // ── ADD INSTAGRAM REEL ────────────────────────────────────────────────────
+    if ($action === 'add_reel') {
+        $url = normalize_reel_url($_POST['reel_url'] ?? '');
+        if (!is_valid_reel_url($url)) {
+            $_SESSION['flash_error'] = 'Neplatný Instagram odkaz. Použij odkaz na reel nebo příspěvek (instagram.com/reel/… nebo /p/…).';
+            redirect('index.php#reels');
+        }
+        try {
+            add_reel(get_db(), $url);
+            $_SESSION['flash_success'] = 'Video přidáno.';
+        } catch (\Exception $e) {
+            $_SESSION['flash_error'] = 'Chyba při přidávání videa.';
+        }
+        redirect('index.php#reels');
+    }
+
+    // ── DELETE INSTAGRAM REEL ─────────────────────────────────────────────────
+    if ($action === 'delete_reel') {
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id > 0) {
+            try {
+                delete_reel(get_db(), $id);
+                $_SESSION['flash_success'] = 'Video smazáno.';
+            } catch (\Exception $e) {
+                $_SESSION['flash_error'] = 'Chyba při mazání videa.';
+            }
+        }
+        redirect('index.php#reels');
+    }
 }
 
 // ─── GET: CSV export ──────────────────────────────────────────────────────────
@@ -157,6 +187,7 @@ unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 
 $db_error   = null;
 $supporters = [];
+$reels      = [];
 $stats      = ['total' => 0, 'founding' => 0, 'community' => 0, 'today' => 0];
 $total_rows = 0;
 
@@ -189,6 +220,8 @@ if (is_admin()) {
         $stmt->bindValue(':offset', $offset,   PDO::PARAM_INT);
         $stmt->execute();
         $supporters = $stmt->fetchAll();
+
+        $reels = get_reels($db);
     } catch (\Exception $e) {
         $db_error = 'Chyba DB: ' . $e->getMessage();
     }
@@ -512,6 +545,64 @@ tr:hover td { background: rgba(255,0,60,0.04); }
       </span>
     </div>
   <?php endif; ?>
+
+  <!-- ── Instagram videa ───────────────────────────────────────────────── -->
+  <div id="reels" style="margin-top:56px;">
+    <div style="margin-bottom:20px;">
+      <div class="font-oswald" style="font-size:.65rem;letter-spacing:.4em;color:#ff003c;text-transform:uppercase;margin-bottom:4px;">// VIDEA NA WEBU //</div>
+      <h2 class="font-bebas" style="font-size:2rem;color:#fff;">INSTAGRAM REELS</h2>
+      <p class="font-oswald" style="font-size:.8rem;color:#6b7280;letter-spacing:.05em;margin-top:6px;">
+        Na Instagramu u reelu klikni na <b style="color:#9ca3af;">··· → Kopírovat odkaz</b> a vlož ho sem. Objeví se na hlavní stránce v sekci VIDEÁ.
+      </p>
+    </div>
+
+    <!-- Add form -->
+    <form method="POST" action="index.php#reels" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;align-items:center;">
+      <input type="hidden" name="action" value="add_reel">
+      <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
+      <input class="search-input" type="text" name="reel_url" required
+             placeholder="https://www.instagram.com/reel/…"
+             style="max-width:480px;flex:1;min-width:240px;">
+      <button type="submit" class="submit-btn" style="width:auto;padding:11px 26px;">+ Přidat video</button>
+    </form>
+
+    <!-- Reels list -->
+    <?php if (empty($reels)): ?>
+      <div style="border:1px dashed rgba(255,0,60,0.3);padding:28px;text-align:center;color:#4b5563;font-family:'Special Elite',cursive;">
+        Zatím žádná videa. Přidej první odkaz výše.
+      </div>
+    <?php else: ?>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Odkaz</th><th>Přidáno</th><th>Akce</th></tr>
+          </thead>
+          <tbody>
+            <?php foreach ($reels as $i => $r): ?>
+              <tr>
+                <td style="color:#4b5563;"><?= $i + 1 ?></td>
+                <td style="font-size:.8rem;">
+                  <a href="<?= htmlspecialchars($r['url'], ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer"
+                     style="color:#60a5fa;text-decoration:none;word-break:break-all;">
+                    <?= htmlspecialchars($r['url'], ENT_QUOTES, 'UTF-8') ?>
+                  </a>
+                </td>
+                <td style="color:#6b7280;font-size:.75rem;white-space:nowrap;"><?= htmlspecialchars(substr((string)($r['created_at'] ?? ''), 0, 16), ENT_QUOTES, 'UTF-8') ?></td>
+                <td>
+                  <form method="POST" action="index.php#reels" onsubmit="return confirm('Smazat tohle video?');" style="display:inline;">
+                    <input type="hidden" name="action" value="delete_reel">
+                    <input type="hidden" name="id" value="<?= (int)$r['id'] ?>">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
+                    <button type="submit" class="action-btn del">Smazat</button>
+                  </form>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+    <?php endif; ?>
+  </div>
 
 </div><!-- /container -->
 
