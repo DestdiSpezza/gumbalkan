@@ -198,7 +198,7 @@ body { background: #000; color: #fff; overflow-x: hidden; }
        <div class="font-oswald text-xs tracking-[0.35em] text-red-500 uppercase mt-2">Kilometrů</div>
       </div>
       <div class="reveal text-center py-10 px-4" style="border-right:1px solid rgba(255,0,60,0.12);">
-       <div class="countdown-num font-bebas text-6xl md:text-8xl text-white">8+</div>
+       <div class="countdown-num font-bebas text-6xl md:text-8xl text-white">5</div>
        <div class="font-oswald text-xs tracking-[0.35em] text-red-500 uppercase mt-2">Zemí</div>
       </div>
       <div class="reveal text-center py-10 px-4" style="border-right:1px solid rgba(255,0,60,0.12);">
@@ -285,21 +285,18 @@ body { background: #000; color: #fff; overflow-x: hidden; }
      </div>
      <!-- Route timeline -->
      <div class="reveal" style="overflow-x:auto;padding-bottom:24px;">
-      <div style="display:flex;align-items:center;gap:0;min-width:900px;position:relative;padding:32px 0;">
+      <div style="display:flex;align-items:center;gap:0;min-width:600px;position:relative;padding:32px 0;">
        <!-- Connecting line -->
-       <div style="position:absolute;top:50%;left:40px;right:40px;height:2px;background:linear-gradient(90deg,#ff003c,#ff6b35,#f59e0b,#10b981,#06b6d4,#8b5cf6,#ff003c);opacity:0.4;transform:translateY(-50%);z-index:0;"></div>
+       <div style="position:absolute;top:50%;left:40px;right:40px;height:2px;background:linear-gradient(90deg,#ff003c,#ff6b35,#f59e0b,#06b6d4,#10b981,#ff003c);opacity:0.4;transform:translateY(-50%);z-index:0;"></div>
        <!-- Stops -->
        <?php
        $stops = [
-         ['flag'=>'🇨🇿','country'=>'ČESKO',   'city'=>'Start',      'color'=>'#ff003c'],
-         ['flag'=>'🇭🇺','country'=>'MAĎARSKO', 'city'=>'Průjezd',    'color'=>'#ff6b35'],
-         ['flag'=>'🇷🇸','country'=>'SRBSKO',   'city'=>'Bělehrad',   'color'=>'#f59e0b'],
-         ['flag'=>'🇲🇰','country'=>'MAKEDONIE','city'=>'Skopje',     'color'=>'#10b981'],
-         ['flag'=>'🇦🇱','country'=>'ALBÁNIE',  'city'=>'Tirana',     'color'=>'#06b6d4'],
-         ['flag'=>'🇲🇪','country'=>'ČERNÁ HORA','city'=>'Kotor',     'color'=>'#8b5cf6'],
-         ['flag'=>'🇧🇦','country'=>'BOSNA',    'city'=>'Sarajevo',   'color'=>'#ec4899'],
-         ['flag'=>'🇭🇷','country'=>'CHORVATSKO','city'=>'Split',     'color'=>'#f97316'],
-         ['flag'=>'🇨🇿','country'=>'ČESKO',    'city'=>'Domů. Živí?','color'=>'#ff003c'],
+         ['flag'=>'🇨🇿','country'=>'ČESKO',    'city'=>'Start · Bílá',  'color'=>'#ff003c'],
+         ['flag'=>'🇸🇰','country'=>'SLOVENSKO', 'city'=>'Průjezd',       'color'=>'#ff6b35'],
+         ['flag'=>'🇭🇺','country'=>'MAĎARSKO',  'city'=>'Průjezd',       'color'=>'#f59e0b'],
+         ['flag'=>'🇭🇷','country'=>'CHORVATSKO','city'=>'Průjezd',        'color'=>'#06b6d4'],
+         ['flag'=>'🇧🇦','country'=>'BOSNA',     'city'=>'Cíl · Sarajevo','color'=>'#10b981'],
+         ['flag'=>'🇨🇿','country'=>'ČESKO',     'city'=>'Domů. Živí?',   'color'=>'#ff003c'],
        ];
        foreach ($stops as $i => $stop):
        ?>
@@ -335,7 +332,7 @@ body { background: #000; color: #fff; overflow-x: hidden; }
       <div style="border:1px solid rgba(255,0,60,0.2);padding:24px;background:rgba(255,0,60,0.03);transition:all .3s;" onmouseover="this.style.borderColor='rgba(255,0,60,0.6)';this.style.background='rgba(255,0,60,0.07)'" onmouseout="this.style.borderColor='rgba(255,0,60,0.2)';this.style.background='rgba(255,0,60,0.03)'">
        <div class="font-bebas text-4xl text-red-500 mb-2">01</div>
        <div class="font-bebas text-2xl text-white mb-2">VRAK, NE LIMUZÍNA</div>
-       <div class="font-elite text-gray-400 text-sm leading-relaxed">Auto musí být starý vrak zakoupený za co nejméně peněz. Čím víc toho chybí, tím líp.</div>
+       <div class="font-elite text-gray-400 text-sm leading-relaxed">Auto max za <span class="text-red-500 font-bold">25 000 Kč</span>. Čím víc toho chybí, tím líp. Servisní knížka nepovinná. Lepenka povinná.</div>
       </div>
       <div style="border:1px solid rgba(255,0,60,0.2);padding:24px;background:rgba(255,0,60,0.03);transition:all .3s;" onmouseover="this.style.borderColor='rgba(255,0,60,0.6)';this.style.background='rgba(255,0,60,0.07)'" onmouseout="this.style.borderColor='rgba(255,0,60,0.2)';this.style.background='rgba(255,0,60,0.03)'">
        <div class="font-bebas text-4xl text-red-500 mb-2">02</div>
