@@ -146,7 +146,14 @@ body { background: #000; color: #fff; overflow-x: hidden; }
  </head>
  <body class="h-full">
   <div class="noise-overlay"></div>
-  <div id="app-wrapper" class="w-full" style="height:100%; overflow-y:auto; overflow-x:hidden;"><!-- HERO -->
+  <!-- NAV -->
+  <nav style="position:fixed;top:0;left:0;width:100%;z-index:10000;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,0,60,0.2);">
+    <div style="max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;height:52px;gap:32px;">
+      <a href="index.php" class="font-bebas" style="font-size:1.4rem;color:#fff;text-decoration:none;letter-spacing:0.08em;transition:color 0.2s;" onmouseover="this.style.color='#ff003c'" onmouseout="this.style.color='#fff'">GUMBALKÁN</a>
+      <a href="alps.php" class="font-oswald" style="font-size:0.8rem;color:#9ca3af;text-decoration:none;letter-spacing:0.25em;text-transform:uppercase;transition:color 0.2s;padding:4px 0;border-bottom:2px solid transparent;" onmouseover="this.style.color='#ff003c';this.style.borderBottomColor='#ff003c'" onmouseout="this.style.color='#9ca3af';this.style.borderBottomColor='transparent'">Training camp in the Alps</a>
+    </div>
+  </nav>
+  <div id="app-wrapper" class="w-full" style="height:100%; overflow-y:auto; overflow-x:hidden; padding-top:52px;"><!-- HERO -->
    <section id="hero-section" class="relative w-full scanline" style="height:100%; perspective: 1000px;">
     <div class="absolute inset-0" style="background: linear-gradient(135deg, #0a0a0a 0%, #1a0008 40%, #0a0a0a 100%);"></div><!-- Animated road stripes -->
     <div class="absolute inset-0 opacity-20" style="animation: roadDrift 4s linear infinite;">
