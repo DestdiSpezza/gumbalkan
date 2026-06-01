@@ -2,4 +2,5 @@ database/*.sqlite
 database/*.sqlite-wal
 database/*.sqlite-shm
 photos/
+logos/
 includes/config.local.php

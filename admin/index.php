@@ -139,6 +139,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         redirect('index.php#reels');
     }
+
+    // ── ADD SPONSOR ───────────────────────────────────────────────────────────
+    if ($action === 'add_sponsor') {
+        $name = trim($_POST['sponsor_name'] ?? '');
+        $url  = trim($_POST['sponsor_url'] ?? '');
+
+        if ($name === '') {
+            $_SESSION['flash_error'] = 'Zadej název partnera.';
+            redirect('index.php#sponsors');
+        }
+        if ($url !== '' && !filter_var($url, FILTER_VALIDATE_URL)) {
+            $_SESSION['flash_error'] = 'Neplatná webová adresa partnera.';
+            redirect('index.php#sponsors');
+        }
+        if (empty($_FILES['sponsor_logo']) || ($_FILES['sponsor_logo']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+            $_SESSION['flash_error'] = 'Nahraj logo partnera (PNG, JPG, SVG nebo WEBP).';
+            redirect('index.php#sponsors');
+        }
+
+        $allowed = ['png' => 'image/png', 'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'svg' => 'image/svg+xml', 'webp' => 'image/webp', 'gif' => 'image/gif'];
+        $ext = strtolower(pathinfo($_FILES['sponsor_logo']['name'], PATHINFO_EXTENSION));
+        if (!isset($allowed[$ext])) {
+            $_SESSION['flash_error'] = 'Nepodporovaný formát loga.';
+            redirect('index.php#sponsors');
+        }
+        if ($_FILES['sponsor_logo']['size'] > 3 * 1024 * 1024) {
+            $_SESSION['flash_error'] = 'Logo je moc velké (max 3 MB).';
+            redirect('index.php#sponsors');
+        }
+
+        $logoDir = __DIR__ . '/../logos';
+        if (!is_dir($logoDir)) mkdir($logoDir, 0755, true);
+        $fname    = 'sponsor_' . bin2hex(random_bytes(6)) . '.' . $ext;
+        $destAbs  = $logoDir . '/' . $fname;
+        $destRel  = 'logos/' . $fname;
+
+        if (!move_uploaded_file($_FILES['sponsor_logo']['tmp_name'], $destAbs)) {
+            $_SESSION['flash_error'] = 'Nepodařilo se uložit logo.';
+            redirect('index.php#sponsors');
+        }
+        try {
+            add_sponsor(get_db(), $name, $destRel, $url);
+            $_SESSION['flash_success'] = 'Partner přidán.';
+        } catch (\Exception $e) {
+            @unlink($destAbs);
+            $_SESSION['flash_error'] = 'Chyba při ukládání partnera.';
+        }
+        redirect('index.php#sponsors');
+    }
+
+    // ── DELETE SPONSOR ────────────────────────────────────────────────────────
+    if ($action === 'delete_sponsor') {
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id > 0) {
+            try {
+                $db  = get_db();
+                $row = get_sponsor($db, $id);
+                delete_sponsor($db, $id);
+                if ($row && !empty($row['logo_path'])) {
+                    $f = __DIR__ . '/../' . $row['logo_path'];
+                    if (is_file($f)) @unlink($f);
+                }
+                $_SESSION['flash_success'] = 'Partner smazán.';
+            } catch (\Exception $e) {
+                $_SESSION['flash_error'] = 'Chyba při mazání partnera.';
+            }
+        }
+        redirect('index.php#sponsors');
+    }
 }
 
 // ─── GET: CSV export ──────────────────────────────────────────────────────────
@@ -188,6 +257,7 @@ unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 $db_error   = null;
 $supporters = [];
 $reels      = [];
+$sponsors   = [];
 $stats      = ['total' => 0, 'founding' => 0, 'community' => 0, 'today' => 0];
 $total_rows = 0;
 
@@ -221,7 +291,8 @@ if (is_admin()) {
         $stmt->execute();
         $supporters = $stmt->fetchAll();
 
-        $reels = get_reels($db);
+        $reels    = get_reels($db);
+        $sponsors = get_sponsors($db);
     } catch (\Exception $e) {
         $db_error = 'Chyba DB: ' . $e->getMessage();
     }
@@ -592,6 +663,67 @@ tr:hover td { background: rgba(255,0,60,0.04); }
                   <form method="POST" action="index.php#reels" onsubmit="return confirm('Smazat tohle video?');" style="display:inline;">
                     <input type="hidden" name="action" value="delete_reel">
                     <input type="hidden" name="id" value="<?= (int)$r['id'] ?>">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
+                    <button type="submit" class="action-btn del">Smazat</button>
+                  </form>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+    <?php endif; ?>
+  </div>
+
+  <!-- ── Firemní partneři ──────────────────────────────────────────────── -->
+  <div id="sponsors" style="margin-top:56px;">
+    <div style="margin-bottom:20px;">
+      <div class="font-oswald" style="font-size:.65rem;letter-spacing:.4em;color:#ff003c;text-transform:uppercase;margin-bottom:4px;">// PARTNEŘI //</div>
+      <h2 class="font-bebas" style="font-size:2rem;color:#fff;">FIREMNÍ SPONZOŘI</h2>
+      <p class="font-oswald" style="font-size:.8rem;color:#6b7280;letter-spacing:.05em;margin-top:6px;">
+        Nahraj logo partnera, jeho jméno a odkaz na web. Objeví se na hlavní stránce v sekci PARTNEŘI.
+      </p>
+    </div>
+
+    <!-- Add form -->
+    <form method="POST" action="index.php#sponsors" enctype="multipart/form-data"
+          style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;align-items:center;">
+      <input type="hidden" name="action" value="add_sponsor">
+      <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
+      <input class="search-input" type="text" name="sponsor_name" required placeholder="Název firmy" style="max-width:220px;">
+      <input class="search-input" type="url" name="sponsor_url" placeholder="https://web-partnera.cz (nepovinné)" style="max-width:300px;flex:1;min-width:200px;">
+      <input type="file" name="sponsor_logo" accept="image/png,image/jpeg,image/svg+xml,image/webp,image/gif" required
+             style="color:#9ca3af;font-family:'Oswald',sans-serif;font-size:.8rem;max-width:260px;">
+      <button type="submit" class="submit-btn" style="width:auto;padding:11px 26px;">+ Přidat partnera</button>
+    </form>
+
+    <!-- Sponsors list -->
+    <?php if (empty($sponsors)): ?>
+      <div style="border:1px dashed rgba(255,0,60,0.3);padding:28px;text-align:center;color:#4b5563;font-family:'Special Elite',cursive;">
+        Zatím žádní partneři. Přidej prvního výše.
+      </div>
+    <?php else: ?>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Logo</th><th>Název</th><th>Web</th><th>Akce</th></tr>
+          </thead>
+          <tbody>
+            <?php foreach ($sponsors as $sp): ?>
+              <tr>
+                <td><img src="../<?= htmlspecialchars($sp['logo_path'], ENT_QUOTES, 'UTF-8') ?>" alt="" style="height:38px;max-width:120px;object-fit:contain;background:#fff;padding:3px;"></td>
+                <td><span class="font-bebas" style="font-size:1.1rem;"><?= htmlspecialchars($sp['name'], ENT_QUOTES, 'UTF-8') ?></span></td>
+                <td style="font-size:.8rem;">
+                  <?php if (!empty($sp['url'])): ?>
+                    <a href="<?= htmlspecialchars($sp['url'], ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer" style="color:#60a5fa;text-decoration:none;word-break:break-all;"><?= htmlspecialchars($sp['url'], ENT_QUOTES, 'UTF-8') ?></a>
+                  <?php else: ?>
+                    <span style="color:#4b5563;">–</span>
+                  <?php endif; ?>
+                </td>
+                <td>
+                  <form method="POST" action="index.php#sponsors" onsubmit="return confirm('Smazat partnera <?= htmlspecialchars(addslashes($sp['name']), ENT_QUOTES, 'UTF-8') ?>?');" style="display:inline;">
+                    <input type="hidden" name="action" value="delete_sponsor">
+                    <input type="hidden" name="id" value="<?= (int)$sp['id'] ?>">
                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
                     <button type="submit" class="action-btn del">Smazat</button>
                   </form>

@@ -37,3 +37,12 @@ define('ADMIN_SESSION_KEY', 'gumbalkan_admin');
  * Příklad: 'https://chat.whatsapp.com/XXXXXXXXXXXXXXX'
  */
 if (!defined('WHATSAPP_GROUP_URL')) define('WHATSAPP_GROUP_URL', 'https://chat.whatsapp.com/KjzkcIXfxGQL4PExzjt8a0');
+
+/**
+ * E-mail, kam chodí upozornění na nové registrace podporovatelů.
+ * Nech prázdné pro vypnutí notifikací.
+ */
+if (!defined('ADMIN_NOTIFY_EMAIL')) define('ADMIN_NOTIFY_EMAIL', 'dest.di.spezza@gmail.com');
+
+/** Odesílatel e-mailů (musí být na doméně hostingu, jinak hrozí spam složka). */
+if (!defined('MAIL_FROM')) define('MAIL_FROM', 'noreply@eda.borec.cz');

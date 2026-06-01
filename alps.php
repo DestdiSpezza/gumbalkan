@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/includes/meta.php';
 // Photo upload
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['photo'])) {
     header('Content-Type: application/json');
@@ -40,7 +41,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['photos'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Training Camp in the Alps – GUMBALKAN 2026</title>
+  <title>Training Camp in the Alps – GUMBALKÁN 2026</title>
+  <meta name="robots" content="noindex">
+<?php render_head_meta(
+  'Training Camp in the Alps – GUMBALKÁN 2026',
+  'Tréninkový kemp v Alpách. Interní mapa a fotky posádky Jedeme na jedno.'
+); ?>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Special+Elite&family=Oswald:wght@400;700&display=swap" rel="stylesheet">

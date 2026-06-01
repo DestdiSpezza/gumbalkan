@@ -3,13 +3,18 @@
    Videa se spravují z admin panelu (admin/index.php → INSTAGRAM REELS).
    Tady se jen načtou z databáze a vykreslí v sekci VIDEÁ.                   */
 require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/meta.php';
 $instagram_reels = [];
+$sponsors        = [];
 try {
-    foreach (get_reels(get_db()) as $r) {
+    $db = get_db();
+    foreach (get_reels($db) as $r) {
         $instagram_reels[] = $r['url'];
     }
+    $sponsors = get_sponsors($db);
 } catch (\Throwable $e) {
     $instagram_reels = []; // DB nedostupná → ukáže se prázdný stav
+    $sponsors        = [];
 }
 ?>
 <!doctype html>
@@ -17,7 +22,11 @@ try {
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GUMBALKAN 2026 – SUMMER EDITION</title>
+  <title>GUMBALKÁN 2026 – Summer Edition</title>
+<?php render_head_meta(
+  'GUMBALKÁN 2026 – Summer Edition',
+  'Čtyři blázni, levné auto a žádný plán. Road trip přes Balkán až do Bosny. Sleduj přípravy, podpoř nás a přidej se k partě.'
+); ?>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
@@ -144,6 +153,19 @@ body { background: #000; color: #fff; overflow-x: hidden; }
   text-shadow: 0 0 16px rgba(255,0,60,0.7);
   transform: scale(1.05);
 }
+
+/* Sdílecí tlačítka */
+.share-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Oswald', sans-serif; font-size: .8rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  padding: 11px 20px; cursor: pointer; text-decoration: none;
+  color: #fff; background: transparent;
+  border: 1px solid rgba(255,0,60,0.35);
+  transition: all .2s;
+  clip-path: polygon(4% 0%,100% 0%,96% 100%,0% 100%);
+}
+.share-btn:hover { background: #ff003c; border-color: #ff003c; color: #fff; transform: translateY(-2px); }
 
 .reveal { opacity: 0; transform: translateY(60px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
 .reveal.visible { opacity: 1; transform: translateY(0); }
@@ -826,6 +848,34 @@ body { background: #000; color: #fff; overflow-x: hidden; }
      </div>
     </div>
    </section>
+<?php if (!empty($sponsors)): ?>
+   <div class="red-line w-full"></div><!-- PARTNERS -->
+   <section class="w-full py-24 px-4 relative" style="background:linear-gradient(180deg,#000 0%,#0a0008 100%);">
+    <div class="max-w-6xl mx-auto">
+     <div class="text-center reveal mb-14">
+      <div class="font-oswald text-xs tracking-[0.4em] text-red-500 uppercase mb-2">// DÍKY ZA PODPORU //</div>
+      <h2 class="font-bebas text-5xl md:text-7xl glitch-hover">PARTNEŘI</h2>
+      <p class="font-elite text-gray-400 text-sm mt-3">Firmy, co nás drží na cestě.</p>
+     </div>
+     <div class="reveal flex flex-wrap justify-center items-center gap-6">
+<?php foreach ($sponsors as $sp):
+        $logo = htmlspecialchars($sp['logo_path'], ENT_QUOTES, 'UTF-8');
+        $name = htmlspecialchars($sp['name'], ENT_QUOTES, 'UTF-8');
+        $href = trim((string)($sp['url'] ?? ''));
+        $tag  = $href !== '' ? 'a' : 'div';
+        $attr = $href !== '' ? ' href="' . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . '" target="_blank" rel="noopener noreferrer"' : '';
+?>
+      <<?= $tag ?><?= $attr ?> title="<?= $name ?>"
+         style="display:flex;align-items:center;justify-content:center;width:180px;height:110px;padding:18px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);transition:all .3s;text-decoration:none;"
+         onmouseover="this.style.borderColor='#ff003c';this.style.background='rgba(255,255,255,0.1)'"
+         onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.background='rgba(255,255,255,0.04)'">
+       <img src="<?= $logo ?>" alt="<?= $name ?>" loading="lazy" style="max-width:100%;max-height:100%;object-fit:contain;filter:grayscale(1) brightness(1.6);transition:filter .3s;" onmouseover="this.style.filter='grayscale(0) brightness(1)'" onmouseout="this.style.filter='grayscale(1) brightness(1.6)'">
+      </<?= $tag ?>>
+<?php endforeach; ?>
+     </div>
+    </div>
+   </section>
+<?php endif; ?>
    <div class="red-line w-full"></div><!-- FOLLOW -->
    <section class="w-full py-24 px-4 relative" style="background:radial-gradient(ellipse at center,#0d0005 0%,#000 70%);">
     <div class="max-w-4xl mx-auto text-center reveal">
@@ -844,6 +894,35 @@ body { background: #000; color: #fff; overflow-x: hidden; }
      </div>
      <div style="border-top:1px solid rgba(255,255,255,.05);padding-top:40px;">
       <p class="font-elite text-gray-600 text-sm">Gumbalkán 2026 · Startujeme <span class="text-red-500">4. července</span> · Dojezd negarantujeme</p>
+     </div>
+    </div>
+   </section>
+
+   <div class="red-line w-full"></div><!-- SHARE -->
+   <section class="w-full py-20 px-4 relative" style="background:#050003;">
+    <div class="max-w-3xl mx-auto text-center reveal">
+     <div class="font-oswald text-xs tracking-[0.4em] text-red-500 uppercase mb-3">// POŠLI DÁL //</div>
+     <h2 class="font-bebas text-4xl md:text-6xl glitch-hover mb-3">ŘEKNI TO KÁMOŠŮM</h2>
+     <p class="font-elite text-gray-400 text-sm mb-10">Čím víc bláznů ví, tím větší jízda. Hoď to dál.</p>
+     <div class="flex flex-wrap justify-center gap-3">
+      <button onclick="nativeShare()" class="share-btn" style="background:#ff003c;color:#fff;border-color:#ff003c;">
+       <i data-lucide="share-2" style="width:18px;height:18px;"></i> Sdílet
+      </button>
+      <a id="share-wa" href="#" target="_blank" rel="noopener noreferrer" class="share-btn">
+       <i data-lucide="message-circle" style="width:18px;height:18px;"></i> WhatsApp
+      </a>
+      <a id="share-fb" href="#" target="_blank" rel="noopener noreferrer" class="share-btn">
+       <i data-lucide="facebook" style="width:18px;height:18px;"></i> Facebook
+      </a>
+      <a id="share-tg" href="#" target="_blank" rel="noopener noreferrer" class="share-btn">
+       <i data-lucide="send" style="width:18px;height:18px;"></i> Telegram
+      </a>
+      <a id="share-x" href="#" target="_blank" rel="noopener noreferrer" class="share-btn">
+       <i data-lucide="twitter" style="width:18px;height:18px;"></i> X
+      </a>
+      <button onclick="copyShareLink(this)" class="share-btn">
+       <i data-lucide="link" style="width:18px;height:18px;"></i> <span>Kopírovat odkaz</span>
+      </button>
      </div>
     </div>
    </section>
@@ -947,6 +1026,38 @@ const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── Sdílení ─────────────────────────────────────────────────────────────────
+const shareUrl  = window.location.origin + window.location.pathname;
+const shareText = 'GUMBALKÁN 2026 – čtyři blázni, levné auto a Balkán. Jedeme na jedno!';
+(function initShare(){
+  const u = encodeURIComponent(shareUrl);
+  const t = encodeURIComponent(shareText);
+  const set = (id, href) => { const el = document.getElementById(id); if (el) el.href = href; };
+  set('share-wa', `https://wa.me/?text=${t}%20${u}`);
+  set('share-fb', `https://www.facebook.com/sharer/sharer.php?u=${u}`);
+  set('share-tg', `https://t.me/share/url?url=${u}&text=${t}`);
+  set('share-x',  `https://twitter.com/intent/tweet?url=${u}&text=${t}`);
+})();
+function nativeShare(){
+  if (navigator.share) {
+    navigator.share({ title: 'GUMBALKÁN 2026', text: shareText, url: shareUrl }).catch(()=>{});
+  } else {
+    document.getElementById('share-wa')?.click();
+  }
+}
+function copyShareLink(btn){
+  const done = () => {
+    const span = btn.querySelector('span');
+    if (span){ const o = span.textContent; span.textContent = 'Zkopírováno!'; setTimeout(()=>span.textContent=o, 1800); }
+  };
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(shareUrl).then(done).catch(done);
+  } else {
+    const ta = document.createElement('textarea'); ta.value = shareUrl; document.body.appendChild(ta);
+    ta.select(); try { document.execCommand('copy'); } catch(e){} ta.remove(); done();
+  }
+}
 
 // Element SDK
 window.elementSdk.init({

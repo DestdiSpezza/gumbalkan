@@ -63,6 +63,14 @@ function _init_sqlite(PDO $pdo): void
             sort_order INTEGER NOT NULL DEFAULT 0,
             created_at TEXT NOT NULL DEFAULT (datetime('now'))
         );
+        CREATE TABLE IF NOT EXISTS GUM_sponsors (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            name       TEXT NOT NULL,
+            logo_path  TEXT NOT NULL DEFAULT '',
+            url        TEXT NOT NULL DEFAULT '',
+            sort_order INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL DEFAULT (datetime('now'))
+        );
         CREATE INDEX IF NOT EXISTS idx_rl_ip_action ON GUM_rate_limits(ip_address, action);
         CREATE INDEX IF NOT EXISTS idx_rl_created   ON GUM_rate_limits(created_at);
         CREATE INDEX IF NOT EXISTS idx_sup_created  ON GUM_supporters(created_at);
@@ -211,6 +219,67 @@ function delete_reel(PDO $db, int $id): void
 {
     $stmt = $db->prepare('DELETE FROM GUM_reels WHERE id = :id');
     $stmt->execute([':id' => $id]);
+}
+
+// ─── Firemní sponzoři / partneři ──────────────────────────────────────────────
+function get_sponsors(PDO $db): array
+{
+    return $db->query(
+        'SELECT id, name, logo_path, url FROM GUM_sponsors ORDER BY sort_order ASC, id ASC'
+    )->fetchAll();
+}
+
+function add_sponsor(PDO $db, string $name, string $logo_path, string $url): void
+{
+    $next = (int) $db->query('SELECT COALESCE(MAX(sort_order), 0) + 1 FROM GUM_sponsors')->fetchColumn();
+    $stmt = $db->prepare(
+        'INSERT INTO GUM_sponsors (name, logo_path, url, sort_order)
+         VALUES (:name, :logo, :url, :sort)'
+    );
+    $stmt->execute([':name' => $name, ':logo' => $logo_path, ':url' => $url, ':sort' => $next]);
+}
+
+function get_sponsor(PDO $db, int $id): ?array
+{
+    $stmt = $db->prepare('SELECT id, name, logo_path, url FROM GUM_sponsors WHERE id = :id');
+    $stmt->execute([':id' => $id]);
+    $row = $stmt->fetch();
+    return $row ?: null;
+}
+
+function delete_sponsor(PDO $db, int $id): void
+{
+    $stmt = $db->prepare('DELETE FROM GUM_sponsors WHERE id = :id');
+    $stmt->execute([':id' => $id]);
+}
+
+// ─── Admin notifikace e-mailem ────────────────────────────────────────────────
+function notify_new_supporter(array $supporter): void
+{
+    if (!defined('ADMIN_NOTIFY_EMAIL') || ADMIN_NOTIFY_EMAIL === '') {
+        return;
+    }
+    $to      = ADMIN_NOTIFY_EMAIL;
+    $nick    = $supporter['nickname'] ?? '?';
+    $email   = $supporter['email'] ?? '?';
+    $wa      = $supporter['whatsapp_number'] ?? '';
+    $found   = !empty($supporter['is_founding']) ? 'ANO 🔥' : 'ne';
+    $when    = date('j.n.Y H:i');
+
+    $subject = '=?UTF-8?B?' . base64_encode('Gumbalkán – nový podporovatel: ' . $nick) . '?=';
+    $body    = "Nový člen komunity Gumbalkán:\n\n"
+             . "Přezdívka:  $nick\n"
+             . "E-mail:     $email\n"
+             . "WhatsApp:   " . ($wa !== '' ? $wa : '–') . "\n"
+             . "Founding:   $found\n"
+             . "Čas:        $when\n";
+
+    $from    = defined('MAIL_FROM') && MAIL_FROM !== '' ? MAIL_FROM : 'noreply@localhost';
+    $headers = "From: Gumbalkán <$from>\r\n"
+             . "Content-Type: text/plain; charset=UTF-8\r\n"
+             . "X-Mailer: PHP/" . phpversion();
+
+    @mail($to, $subject, $body, $headers);
 }
 
 // ─── Human-readable time (Czech) ─────────────────────────────────────────────

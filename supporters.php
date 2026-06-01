@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/config.php';
+require_once __DIR__ . '/includes/meta.php';
 
 // ─── AJAX: GET ?action=load&page=N ───────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['action'] ?? '') === 'load') {
@@ -83,7 +84,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $whatsapp_number  = trim($body['whatsapp_number'] ?? '');
     $whatsapp_group   = trim($body['whatsapp_group'] ?? '');
     $wants_community  = isset($body['wants_community']) && $body['wants_community'] ? 1 : 0;
+    $gdpr_consent     = isset($body['gdpr_consent']) && $body['gdpr_consent'] ? 1 : 0;
 
+    if (!$gdpr_consent) {
+        echo json_encode(['success' => false, 'message' => 'Bez souhlasu se zpracováním údajů se nemůžeš zaregistrovat.', 'field' => 'gdpr_consent']);
+        exit;
+    }
     if ($nickname === '') {
         echo json_encode(['success' => false, 'message' => 'Přezdívka je povinná.']);
         exit;
@@ -145,6 +151,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([':id' => $new_id]);
         $supporter = $stmt->fetch();
 
+        // Notifikace adminovi (selže-li mail, registrace tím netrpí)
+        notify_new_supporter([
+            'nickname'        => $nickname,
+            'email'           => $email,
+            'whatsapp_number' => $whatsapp_number,
+            'is_founding'     => $is_founding,
+        ]);
+
         echo json_encode([
             'success'    => true,
             'message'    => $is_founding
@@ -190,6 +204,10 @@ $ticker_doubled = array_merge($ticker_items, $ticker_items);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Komunita – GUMBALKÁN 2026</title>
+<?php render_head_meta(
+  'Komunita – GUMBALKÁN 2026',
+  'Přidej se k partě Jedeme na jedno. Zapiš se na zeď podporovatelů, staň se Founding Supporterem a jeď s námi celý Balkán.'
+); ?>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Special+Elite&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
   <style>
@@ -479,10 +497,20 @@ html, body { min-height: 100%; background: #000; color: #fff; font-family: 'Oswa
                  placeholder="název skupiny" maxlength="100">
         </div>
 
-        <div style="margin-bottom:24px;display:flex;align-items:flex-start;gap:10px;">
+        <div style="margin-bottom:18px;display:flex;align-items:flex-start;gap:10px;">
           <input class="custom-cb" type="checkbox" id="wants_community" name="wants_community" value="1" style="margin-top:2px;flex-shrink:0;">
           <label for="wants_community" style="font-family:'Special Elite',cursive;font-size:.9rem;color:#9ca3af;cursor:pointer;line-height:1.4;">
             Chci být součástí komunity a dostávat info o Gumbalkán akcích
+          </label>
+        </div>
+
+        <div style="margin-bottom:24px;display:flex;align-items:flex-start;gap:10px;">
+          <input class="custom-cb" type="checkbox" id="gdpr_consent" name="gdpr_consent" value="1" required style="margin-top:2px;flex-shrink:0;">
+          <label for="gdpr_consent" style="font-family:'Special Elite',cursive;font-size:.82rem;color:#9ca3af;cursor:pointer;line-height:1.4;">
+            Souhlasím se zpracováním zadaných údajů (přezdívka, e-mail, příp. WhatsApp)
+            pro účely komunity Gumbalkán.
+            <a href="#" onclick="document.getElementById('gdpr-modal').style.display='flex';return false;"
+               style="color:#ff003c;text-decoration:underline;">Zásady zpracování</a>
           </label>
         </div>
 
@@ -531,6 +559,24 @@ html, body { min-height: 100%; background: #000; color: #fff; font-family: 'Oswa
 
   </div>
 </section>
+
+<!-- ── GDPR modal ─────────────────────────────────────────────────────── -->
+<div id="gdpr-modal" onclick="if(event.target===this)this.style.display='none';"
+     style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:300;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#0a0003;border:1px solid rgba(255,0,60,.4);padding:32px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;">
+    <div class="font-oswald" style="font-size:.65rem;letter-spacing:.4em;color:#ff003c;text-transform:uppercase;margin-bottom:8px;">// SOUKROMÍ //</div>
+    <h3 class="font-bebas" style="font-size:1.8rem;margin-bottom:16px;color:#fff;">ZÁSADY ZPRACOVÁNÍ ÚDAJŮ</h3>
+    <div style="font-family:'Oswald',sans-serif;font-size:.85rem;color:#9ca3af;line-height:1.6;">
+      <p style="margin-bottom:12px;"><b style="color:#fff;">Jaké údaje sbíráme:</b> přezdívku, e-mail a nepovinně WhatsApp kontakt. Pro ochranu proti spamu dočasně ukládáme i IP adresu.</p>
+      <p style="margin-bottom:12px;"><b style="color:#fff;">Proč:</b> abychom tě mohli vést v komunitě Gumbalkán a posílat ti info o akcích a průběhu cesty.</p>
+      <p style="margin-bottom:12px;"><b style="color:#fff;">Komu je předáváme:</b> nikomu. Údaje nepředáváme třetím stranám ani neprodáváme.</p>
+      <p style="margin-bottom:12px;"><b style="color:#fff;">Jak dlouho:</b> dokud trvá komunita, nebo dokud nepožádáš o smazání.</p>
+      <p style="margin-bottom:0;"><b style="color:#fff;">Tvá práva:</b> kdykoliv můžeš požádat o výpis nebo smazání svých údajů na <a href="mailto:dest.di.spezza@gmail.com" style="color:#ff003c;">dest.di.spezza@gmail.com</a>.</p>
+    </div>
+    <button type="button" onclick="document.getElementById('gdpr-modal').style.display='none';"
+            class="submit-btn" style="margin-top:24px;">ROZUMÍM</button>
+  </div>
+</div>
 
 <div class="red-line"></div>
 
@@ -664,6 +710,7 @@ document.getElementById('reg-form').addEventListener('submit', async function(e)
     whatsapp_number:  document.getElementById('whatsapp_number').value,
     whatsapp_group:   document.getElementById('whatsapp_group').value,
     wants_community:  document.getElementById('wants_community').checked ? '1' : '0',
+    gdpr_consent:     document.getElementById('gdpr_consent').checked ? '1' : '0',
     website:          document.getElementById('website').value, // honeypot
     csrf_token:       csrf,
   };

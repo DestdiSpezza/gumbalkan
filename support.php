@@ -1,9 +1,14 @@
+<?php require_once __DIR__ . '/includes/meta.php'; ?>
 <!doctype html>
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Podpořte nás – GUMBALKAN 2026</title>
+  <title>Podpořte nás – GUMBALKÁN 2026</title>
+<?php render_head_meta(
+  'Podpořte nás – GUMBALKÁN 2026',
+  'Pomoz nám dojet přes Balkán až do Bosny. Každá koruna jde na palivo, opravy a chaos. Naskenuj QR a podpoř partu Jedeme na jedno.'
+); ?>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Special+Elite&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
