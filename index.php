@@ -7,6 +7,7 @@ require_once __DIR__ . '/includes/meta.php';
 $instagram_reels = [];
 $sponsors        = [];
 $gallery_photos  = [];
+$apps            = [];
 try {
     $db = get_db();
     foreach (get_reels($db) as $r) {
@@ -14,10 +15,12 @@ try {
     }
     $sponsors       = get_sponsors($db);
     $gallery_photos = get_photos($db);
+    $apps           = get_apps($db);
 } catch (\Throwable $e) {
     $instagram_reels = []; // DB nedostupná → ukáže se prázdný stav
     $sponsors        = [];
     $gallery_photos  = [];
+    $apps            = [];
 }
 ?>
 <!doctype html>
@@ -32,6 +35,7 @@ try {
 ); ?>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
   <script src="/_sdk/image_sdk.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Special+Elite&amp;family=Oswald:wght@400;700&amp;display=swap" rel="stylesheet">
@@ -831,6 +835,51 @@ body { background: #000; color: #fff; overflow-x: hidden; }
 <?php endif; ?>
     </div>
    </section>
+<?php if (!empty($apps)): ?>
+   <div class="red-line w-full"></div><!-- APPS / QR -->
+   <section class="w-full py-24 px-4 relative" style="background:radial-gradient(ellipse at top,#0a0010 0%,#000 70%);">
+    <div class="max-w-6xl mx-auto">
+     <div class="text-center reveal mb-14">
+      <div class="font-oswald text-xs tracking-[0.4em] text-red-500 uppercase mb-2">// VÝBAVA //</div>
+      <h2 class="font-bebas text-5xl md:text-7xl glitch-hover">APPKY NA CESTU</h2>
+      <p class="font-elite text-gray-400 text-sm mt-3">Naskenuj QR a stáhni si to, co frčí s námi.</p>
+     </div>
+     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<?php foreach ($apps as $ai => $ap):
+        $aname = htmlspecialchars($ap['name'], ENT_QUOTES, 'UTF-8');
+        $aurl  = htmlspecialchars($ap['url'], ENT_QUOTES, 'UTF-8');
+?>
+      <div class="reveal" style="border:1px solid rgba(255,0,60,0.2);background:rgba(255,255,255,0.02);padding:28px 24px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:border-color .3s, transform .3s;animation-delay:<?= number_format(0.1 + ($ai % 6) * 0.1, 1) ?>s;"
+           onmouseover="this.style.borderColor='#ff003c';this.style.transform='translateY(-4px)'"
+           onmouseout="this.style.borderColor='rgba(255,0,60,0.2)';this.style.transform='translateY(0)'">
+       <div class="app-qr" data-url="<?= $aurl ?>" style="width:160px;height:160px;background:#fff;padding:10px;display:flex;align-items:center;justify-content:center;"></div>
+       <h3 class="font-bebas mt-5" style="font-size:1.8rem;line-height:1;letter-spacing:.03em;"><?= $aname ?></h3>
+       <a href="<?= $aurl ?>" target="_blank" rel="noopener noreferrer" class="font-oswald mt-4 inline-block"
+          style="font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;color:#fff;background:#ff003c;padding:10px 22px;text-decoration:none;clip-path:polygon(4% 0%,100% 0%,96% 100%,0% 100%);transition:background .2s,color .2s;"
+          onmouseover="this.style.background='#fff';this.style.color='#000'"
+          onmouseout="this.style.background='#ff003c';this.style.color='#fff'">Stáhnout →</a>
+      </div>
+<?php endforeach; ?>
+     </div>
+    </div>
+   </section>
+   <script>
+   (function(){
+     function buildAppQrs(){
+       if (typeof QRCode === 'undefined') return;
+       document.querySelectorAll('.app-qr').forEach(function(el){
+         if (el.dataset.done) return;
+         var url = el.getAttribute('data-url');
+         if (!url) return;
+         new QRCode(el, { text: url, width: 140, height: 140, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+         el.dataset.done = '1';
+       });
+     }
+     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', buildAppQrs);
+     else buildAppQrs();
+   })();
+   </script>
+<?php endif; ?>
 <?php if (!empty($sponsors)): ?>
    <div class="red-line w-full"></div><!-- PARTNERS -->
    <section class="w-full py-24 px-4 relative" style="background:linear-gradient(180deg,#000 0%,#0a0008 100%);">

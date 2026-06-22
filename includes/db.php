@@ -78,6 +78,13 @@ function _init_sqlite(PDO $pdo): void
             sort_order INTEGER NOT NULL DEFAULT 0,
             created_at TEXT NOT NULL DEFAULT (datetime('now'))
         );
+        CREATE TABLE IF NOT EXISTS GUM_apps (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            name       TEXT NOT NULL,
+            url        TEXT NOT NULL,
+            sort_order INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL DEFAULT (datetime('now'))
+        );
         CREATE INDEX IF NOT EXISTS idx_rl_ip_action ON GUM_rate_limits(ip_address, action);
         CREATE INDEX IF NOT EXISTS idx_rl_created   ON GUM_rate_limits(created_at);
         CREATE INDEX IF NOT EXISTS idx_sup_created  ON GUM_supporters(created_at);
@@ -289,6 +296,29 @@ function get_photo(PDO $db, int $id): ?array
 function delete_photo(PDO $db, int $id): void
 {
     $stmt = $db->prepare('DELETE FROM GUM_photos WHERE id = :id');
+    $stmt->execute([':id' => $id]);
+}
+
+// ─── Aplikace s QR odkazem (spravované z adminu) ──────────────────────────────
+function get_apps(PDO $db): array
+{
+    return $db->query(
+        'SELECT id, name, url FROM GUM_apps ORDER BY sort_order ASC, id ASC'
+    )->fetchAll();
+}
+
+function add_app(PDO $db, string $name, string $url): void
+{
+    $next = (int) $db->query('SELECT COALESCE(MAX(sort_order), 0) + 1 FROM GUM_apps')->fetchColumn();
+    $stmt = $db->prepare(
+        'INSERT INTO GUM_apps (name, url, sort_order) VALUES (:name, :url, :sort)'
+    );
+    $stmt->execute([':name' => $name, ':url' => $url, ':sort' => $next]);
+}
+
+function delete_app(PDO $db, int $id): void
+{
+    $stmt = $db->prepare('DELETE FROM GUM_apps WHERE id = :id');
     $stmt->execute([':id' => $id]);
 }
 

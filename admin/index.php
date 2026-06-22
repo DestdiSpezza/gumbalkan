@@ -280,6 +280,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         redirect('index.php#gallery');
     }
+
+    // ── ADD APP (QR odkaz) ────────────────────────────────────────────────────
+    if ($action === 'add_app') {
+        $name = trim($_POST['app_name'] ?? '');
+        $url  = trim($_POST['app_url'] ?? '');
+
+        if ($name === '') {
+            $_SESSION['flash_error'] = 'Zadej název aplikace.';
+            redirect('index.php#apps');
+        }
+        if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('#^https?://#i', $url)) {
+            $_SESSION['flash_error'] = 'Zadej platný odkaz (http:// nebo https://).';
+            redirect('index.php#apps');
+        }
+        try {
+            add_app(get_db(), $name, $url);
+            $_SESSION['flash_success'] = 'Aplikace přidána.';
+        } catch (\Exception $e) {
+            $_SESSION['flash_error'] = 'Chyba při ukládání aplikace.';
+        }
+        redirect('index.php#apps');
+    }
+
+    // ── DELETE APP ────────────────────────────────────────────────────────────
+    if ($action === 'delete_app') {
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id > 0) {
+            try {
+                delete_app(get_db(), $id);
+                $_SESSION['flash_success'] = 'Aplikace smazána.';
+            } catch (\Exception $e) {
+                $_SESSION['flash_error'] = 'Chyba při mazání aplikace.';
+            }
+        }
+        redirect('index.php#apps');
+    }
 }
 
 // ─── GET: CSV export ──────────────────────────────────────────────────────────
@@ -331,6 +367,7 @@ $supporters = [];
 $reels      = [];
 $sponsors   = [];
 $photos     = [];
+$apps       = [];
 $stats      = ['total' => 0, 'founding' => 0, 'community' => 0, 'today' => 0];
 $total_rows = 0;
 
@@ -367,6 +404,7 @@ if (is_admin()) {
         $reels    = get_reels($db);
         $sponsors = get_sponsors($db);
         $photos   = get_photos($db);
+        $apps     = get_apps($db);
     } catch (\Exception $e) {
         $db_error = 'Chyba DB: ' . $e->getMessage();
     }
@@ -851,6 +889,61 @@ tr:hover td { background: rgba(255,0,60,0.04); }
             </form>
           </div>
         <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+  </div>
+
+  <!-- ── Aplikace (QR odkazy) ──────────────────────────────────────────── -->
+  <div id="apps" style="margin-top:56px;">
+    <div style="margin-bottom:20px;">
+      <div class="font-oswald" style="font-size:.65rem;letter-spacing:.4em;color:#ff003c;text-transform:uppercase;margin-bottom:4px;">// VÝBAVA //</div>
+      <h2 class="font-bebas" style="font-size:2rem;color:#fff;">APLIKACE / QR ODKAZY</h2>
+      <p class="font-oswald" style="font-size:.8rem;color:#6b7280;letter-spacing:.05em;margin-top:6px;">
+        Přidej název aplikace a odkaz ke stažení. Na hlavní stránce se zobrazí název, odkaz a QR kód, který si každý naskenuje a appku si stáhne.
+      </p>
+    </div>
+
+    <!-- Add form -->
+    <form method="POST" action="index.php#apps" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;align-items:center;">
+      <input type="hidden" name="action" value="add_app">
+      <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
+      <input class="search-input" type="text" name="app_name" required placeholder="Název (např. Maps.me)" style="max-width:220px;">
+      <input class="search-input" type="url" name="app_url" required placeholder="https://odkaz-ke-stazeni…" style="max-width:360px;flex:1;min-width:240px;">
+      <button type="submit" class="submit-btn" style="width:auto;padding:11px 26px;">+ Přidat aplikaci</button>
+    </form>
+
+    <!-- Apps list -->
+    <?php if (empty($apps)): ?>
+      <div style="border:1px dashed rgba(255,0,60,0.3);padding:28px;text-align:center;color:#4b5563;font-family:'Special Elite',cursive;">
+        Zatím žádné aplikace. Přidej první výše.
+      </div>
+    <?php else: ?>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Název</th><th>Odkaz</th><th>Akce</th></tr>
+          </thead>
+          <tbody>
+            <?php foreach ($apps as $i => $ap): ?>
+              <tr>
+                <td style="color:#4b5563;"><?= $i + 1 ?></td>
+                <td><span class="font-bebas" style="font-size:1.1rem;"><?= htmlspecialchars($ap['name'], ENT_QUOTES, 'UTF-8') ?></span></td>
+                <td style="font-size:.8rem;">
+                  <a href="<?= htmlspecialchars($ap['url'], ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer"
+                     style="color:#60a5fa;text-decoration:none;word-break:break-all;"><?= htmlspecialchars($ap['url'], ENT_QUOTES, 'UTF-8') ?></a>
+                </td>
+                <td>
+                  <form method="POST" action="index.php#apps" onsubmit="return confirm('Smazat aplikaci <?= htmlspecialchars(addslashes($ap['name']), ENT_QUOTES, 'UTF-8') ?>?');" style="display:inline;">
+                    <input type="hidden" name="action" value="delete_app">
+                    <input type="hidden" name="id" value="<?= (int)$ap['id'] ?>">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
+                    <button type="submit" class="action-btn del">Smazat</button>
+                  </form>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
       </div>
     <?php endif; ?>
   </div>
