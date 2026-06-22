@@ -71,6 +71,13 @@ function _init_sqlite(PDO $pdo): void
             sort_order INTEGER NOT NULL DEFAULT 0,
             created_at TEXT NOT NULL DEFAULT (datetime('now'))
         );
+        CREATE TABLE IF NOT EXISTS GUM_photos (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            file_path  TEXT NOT NULL,
+            caption    TEXT NOT NULL DEFAULT '',
+            sort_order INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL DEFAULT (datetime('now'))
+        );
         CREATE INDEX IF NOT EXISTS idx_rl_ip_action ON GUM_rate_limits(ip_address, action);
         CREATE INDEX IF NOT EXISTS idx_rl_created   ON GUM_rate_limits(created_at);
         CREATE INDEX IF NOT EXISTS idx_sup_created  ON GUM_supporters(created_at);
@@ -250,6 +257,38 @@ function get_sponsor(PDO $db, int $id): ?array
 function delete_sponsor(PDO $db, int $id): void
 {
     $stmt = $db->prepare('DELETE FROM GUM_sponsors WHERE id = :id');
+    $stmt->execute([':id' => $id]);
+}
+
+// ─── Foto galerie (spravovaná z adminu) ───────────────────────────────────────
+function get_photos(PDO $db): array
+{
+    return $db->query(
+        'SELECT id, file_path, caption FROM GUM_photos ORDER BY sort_order ASC, id ASC'
+    )->fetchAll();
+}
+
+function add_photo(PDO $db, string $file_path, string $caption = ''): void
+{
+    $next = (int) $db->query('SELECT COALESCE(MAX(sort_order), 0) + 1 FROM GUM_photos')->fetchColumn();
+    $stmt = $db->prepare(
+        'INSERT INTO GUM_photos (file_path, caption, sort_order)
+         VALUES (:path, :caption, :sort)'
+    );
+    $stmt->execute([':path' => $file_path, ':caption' => $caption, ':sort' => $next]);
+}
+
+function get_photo(PDO $db, int $id): ?array
+{
+    $stmt = $db->prepare('SELECT id, file_path, caption FROM GUM_photos WHERE id = :id');
+    $stmt->execute([':id' => $id]);
+    $row = $stmt->fetch();
+    return $row ?: null;
+}
+
+function delete_photo(PDO $db, int $id): void
+{
+    $stmt = $db->prepare('DELETE FROM GUM_photos WHERE id = :id');
     $stmt->execute([':id' => $id]);
 }
 

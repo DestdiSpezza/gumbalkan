@@ -6,15 +6,18 @@ require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/meta.php';
 $instagram_reels = [];
 $sponsors        = [];
+$gallery_photos  = [];
 try {
     $db = get_db();
     foreach (get_reels($db) as $r) {
         $instagram_reels[] = $r['url'];
     }
-    $sponsors = get_sponsors($db);
+    $sponsors       = get_sponsors($db);
+    $gallery_photos = get_photos($db);
 } catch (\Throwable $e) {
     $instagram_reels = []; // DB nedostupná → ukáže se prázdný stav
     $sponsors        = [];
+    $gallery_photos  = [];
 }
 ?>
 <!doctype html>
@@ -806,48 +809,26 @@ body { background: #000; color: #fff; overflow-x: hidden; }
       </div>
       <h2 class="font-bebas text-5xl md:text-7xl glitch-hover">PHOTO GALLERY</h2>
      </div>
+<?php if (!empty($gallery_photos)): ?>
      <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-      <div class="gallery-item reveal aspect-square bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-800 flex items-center justify-center cursor-pointer" style="animation-delay:0.1s;">
-       <div class="text-center">
-        <i data-lucide="camera" style="width:32px;height:32px;color:#ff003c;margin:0 auto;"></i>
-        <div class="font-elite text-gray-600 text-sm mt-2">
-         Photo 01
-        </div>
-       </div>
-      </div>
-      <div class="gallery-item reveal aspect-square bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-800 flex items-center justify-center cursor-pointer" style="animation-delay:0.2s;">
-       <div class="text-center">
-        <i data-lucide="camera" style="width:32px;height:32px;color:#ff003c;margin:0 auto;"></i>
-        <div class="font-elite text-gray-600 text-sm mt-2">
-         Photo 02
-        </div>
-       </div>
-      </div>
-      <div class="gallery-item reveal aspect-square bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-800 flex items-center justify-center cursor-pointer" style="animation-delay:0.3s;">
-       <div class="text-center">
-        <i data-lucide="camera" style="width:32px;height:32px;color:#ff003c;margin:0 auto;"></i>
-        <div class="font-elite text-gray-600 text-sm mt-2">
-         Photo 03
-        </div>
-       </div>
-      </div>
-      <div class="gallery-item reveal aspect-square bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-800 flex items-center justify-center cursor-pointer" style="animation-delay:0.4s;">
-       <div class="text-center">
-        <i data-lucide="camera" style="width:32px;height:32px;color:#ff003c;margin:0 auto;"></i>
-        <div class="font-elite text-gray-600 text-sm mt-2">
-         Photo 04
-        </div>
-       </div>
-      </div>
-      <div class="gallery-item reveal aspect-square bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-800 flex items-center justify-center cursor-pointer col-span-2" style="animation-delay:0.5s;">
-       <div class="text-center">
-        <i data-lucide="camera" style="width:32px;height:32px;color:#ff003c;margin:0 auto;"></i>
-        <div class="font-elite text-gray-600 text-sm mt-2">
-         Photo 05
-        </div>
-       </div>
-      </div>
+      <?php foreach ($gallery_photos as $gi => $gp): ?>
+       <a href="<?= htmlspecialchars($gp['file_path'], ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer"
+          class="gallery-item reveal aspect-square border border-gray-800 block overflow-hidden cursor-pointer"
+          style="animation-delay:<?= number_format(0.1 + ($gi % 6) * 0.1, 1) ?>s;">
+        <img src="<?= htmlspecialchars($gp['file_path'], ENT_QUOTES, 'UTF-8') ?>"
+             alt="<?= htmlspecialchars($gp['caption'] ?? '', ENT_QUOTES, 'UTF-8') ?>" loading="lazy"
+             style="width:100%;height:100%;object-fit:cover;filter:grayscale(0.2) contrast(1.1);transition:transform .3s, filter .3s;"
+             onmouseover="this.style.transform='scale(1.05)';this.style.filter='grayscale(0) contrast(1)'"
+             onmouseout="this.style.transform='scale(1)';this.style.filter='grayscale(0.2) contrast(1.1)'">
+       </a>
+      <?php endforeach; ?>
      </div>
+<?php else: ?>
+     <div class="reveal" style="border:1px dashed rgba(255,0,60,0.3);padding:48px 24px;text-align:center;">
+      <i data-lucide="camera" style="width:40px;height:40px;color:#ff003c;margin:0 auto;"></i>
+      <div class="font-elite text-gray-600 text-sm mt-3">Fotky z cesty brzy přibydou.</div>
+     </div>
+<?php endif; ?>
     </div>
    </section>
 <?php if (!empty($sponsors)): ?>

@@ -75,3 +75,16 @@ CREATE TABLE IF NOT EXISTS `GUM_sponsors` (
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci;
+
+-- ─── photos (foto galerie spravovaná z adminu) ──────────────────────────────────
+CREATE TABLE IF NOT EXISTS `GUM_photos` (
+  `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `file_path`  VARCHAR(255) NOT NULL,
+  `caption`    VARCHAR(160) NOT NULL DEFAULT '',
+  `sort_order` INT          NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_sort_order` (`sort_order`)
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;

@@ -208,6 +208,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         redirect('index.php#sponsors');
     }
+
+    // ── ADD GALLERY PHOTO(S) ──────────────────────────────────────────────────
+    if ($action === 'add_photo') {
+        if (empty($_FILES['photos']) || !is_array($_FILES['photos']['name'] ?? null)) {
+            $_SESSION['flash_error'] = 'Vyber alespoň jednu fotku.';
+            redirect('index.php#gallery');
+        }
+
+        $allowed  = ['png' => 1, 'jpg' => 1, 'jpeg' => 1, 'webp' => 1, 'gif' => 1];
+        $photoDir = __DIR__ . '/../photos/gallery';
+        if (!is_dir($photoDir)) mkdir($photoDir, 0755, true);
+
+        $saved  = 0;
+        $errors = 0;
+        $count  = count($_FILES['photos']['name']);
+        for ($i = 0; $i < $count; $i++) {
+            $err = $_FILES['photos']['error'][$i] ?? UPLOAD_ERR_NO_FILE;
+            if ($err === UPLOAD_ERR_NO_FILE) continue;          // prázdný slot – ignoruj
+            if ($err !== UPLOAD_ERR_OK)      { $errors++; continue; }
+
+            $ext = strtolower(pathinfo($_FILES['photos']['name'][$i], PATHINFO_EXTENSION));
+            if (!isset($allowed[$ext]))                       { $errors++; continue; }
+            if (($_FILES['photos']['size'][$i] ?? 0) > 8 * 1024 * 1024) { $errors++; continue; }
+            // ověř, že jde opravdu o obrázek (ne přejmenovaný soubor)
+            if (@getimagesize($_FILES['photos']['tmp_name'][$i]) === false) { $errors++; continue; }
+
+            $fname   = 'photo_' . bin2hex(random_bytes(6)) . '.' . ($ext === 'jpeg' ? 'jpg' : $ext);
+            $destAbs = $photoDir . '/' . $fname;
+            $destRel = 'photos/gallery/' . $fname;
+
+            if (!move_uploaded_file($_FILES['photos']['tmp_name'][$i], $destAbs)) {
+                $errors++;
+                continue;
+            }
+            try {
+                add_photo(get_db(), $destRel);
+                $saved++;
+            } catch (\Exception $e) {
+                @unlink($destAbs);
+                $errors++;
+            }
+        }
+
+        if ($saved > 0) {
+            $msg = $saved . ' ' . ($saved === 1 ? 'fotka nahrána' : 'fotek nahráno') . '.';
+            if ($errors > 0) $msg .= ' (' . $errors . ' přeskočeno – nepodporovaný formát nebo moc velká.)';
+            $_SESSION['flash_success'] = $msg;
+        } else {
+            $_SESSION['flash_error'] = 'Nepodařilo se nahrát žádnou fotku. Povolené formáty: JPG, PNG, WEBP, GIF (max 8 MB).';
+        }
+        redirect('index.php#gallery');
+    }
+
+    // ── DELETE GALLERY PHOTO ──────────────────────────────────────────────────
+    if ($action === 'delete_photo') {
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id > 0) {
+            try {
+                $db  = get_db();
+                $row = get_photo($db, $id);
+                delete_photo($db, $id);
+                if ($row && !empty($row['file_path'])) {
+                    $f = __DIR__ . '/../' . $row['file_path'];
+                    if (is_file($f)) @unlink($f);
+                }
+                $_SESSION['flash_success'] = 'Fotka smazána.';
+            } catch (\Exception $e) {
+                $_SESSION['flash_error'] = 'Chyba při mazání fotky.';
+            }
+        }
+        redirect('index.php#gallery');
+    }
 }
 
 // ─── GET: CSV export ──────────────────────────────────────────────────────────
@@ -258,6 +330,7 @@ $db_error   = null;
 $supporters = [];
 $reels      = [];
 $sponsors   = [];
+$photos     = [];
 $stats      = ['total' => 0, 'founding' => 0, 'community' => 0, 'today' => 0];
 $total_rows = 0;
 
@@ -293,6 +366,7 @@ if (is_admin()) {
 
         $reels    = get_reels($db);
         $sponsors = get_sponsors($db);
+        $photos   = get_photos($db);
     } catch (\Exception $e) {
         $db_error = 'Chyba DB: ' . $e->getMessage();
     }
@@ -732,6 +806,51 @@ tr:hover td { background: rgba(255,0,60,0.04); }
             <?php endforeach; ?>
           </tbody>
         </table>
+      </div>
+    <?php endif; ?>
+  </div>
+
+  <!-- ── Foto galerie ──────────────────────────────────────────────────── -->
+  <div id="gallery" style="margin-top:56px;">
+    <div style="margin-bottom:20px;">
+      <div class="font-oswald" style="font-size:.65rem;letter-spacing:.4em;color:#ff003c;text-transform:uppercase;margin-bottom:4px;">// EVIDENCE //</div>
+      <h2 class="font-bebas" style="font-size:2rem;color:#fff;">FOTO GALERIE</h2>
+      <p class="font-oswald" style="font-size:.8rem;color:#6b7280;letter-spacing:.05em;margin-top:6px;">
+        Nahraj fotky z cesty – objeví se na hlavní stránce v sekci PHOTO GALLERY. Můžeš vybrat i víc fotek najednou. JPG, PNG, WEBP nebo GIF, max 8 MB na soubor.
+      </p>
+    </div>
+
+    <!-- Add form -->
+    <form method="POST" action="index.php#gallery" enctype="multipart/form-data"
+          style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;align-items:center;">
+      <input type="hidden" name="action" value="add_photo">
+      <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
+      <input type="file" name="photos[]" accept="image/png,image/jpeg,image/webp,image/gif" multiple required
+             style="color:#9ca3af;font-family:'Oswald',sans-serif;font-size:.8rem;max-width:360px;flex:1;min-width:240px;">
+      <button type="submit" class="submit-btn" style="width:auto;padding:11px 26px;">+ Nahrát fotky</button>
+    </form>
+
+    <!-- Photos grid -->
+    <?php if (empty($photos)): ?>
+      <div style="border:1px dashed rgba(255,0,60,0.3);padding:28px;text-align:center;color:#4b5563;font-family:'Special Elite',cursive;">
+        Zatím žádné fotky. Nahraj první výše.
+      </div>
+    <?php else: ?>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;">
+        <?php foreach ($photos as $ph): ?>
+          <div style="position:relative;border:1px solid rgba(255,0,60,0.2);background:#0a0003;">
+            <img src="../<?= htmlspecialchars($ph['file_path'], ENT_QUOTES, 'UTF-8') ?>" alt=""
+                 loading="lazy" style="display:block;width:100%;aspect-ratio:1;object-fit:cover;">
+            <form method="POST" action="index.php#gallery" onsubmit="return confirm('Smazat tuhle fotku?');"
+                  style="position:absolute;top:6px;right:6px;">
+              <input type="hidden" name="action" value="delete_photo">
+              <input type="hidden" name="id" value="<?= (int)$ph['id'] ?>">
+              <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
+              <button type="submit" class="action-btn del" title="Smazat"
+                      style="padding:3px 9px;background:rgba(0,0,0,0.7);">✕</button>
+            </form>
+          </div>
+        <?php endforeach; ?>
       </div>
     <?php endif; ?>
   </div>
