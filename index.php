@@ -230,9 +230,9 @@ body { background: #000; color: #fff; overflow-x: hidden; }
   <nav style="position:fixed;top:0;left:0;width:100%;z-index:10000;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,0,60,0.2);">
     <div style="max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;height:auto;min-height:52px;gap:16px 28px;">
       <a href="index.php" class="nav-brand">GUMBALKÁN</a>
-      <a href="alps.php" class="nav-link">Training camp in the Alps</a>
+      <!-- SKRYTO: <a href="alps.php" class="nav-link">Training camp in the Alps</a> -->
       <a href="supporters.php" class="nav-link">Supporters</a>
-      <a href="support.php" class="nav-link">❤ Podpořte nás</a>
+      <!-- SKRYTO: <a href="support.php" class="nav-link">❤ Podpořte nás</a> -->
     </div>
   </nav>
   <div id="app-wrapper" class="w-full" style="height:100%; overflow-y:auto; overflow-x:hidden; padding-top:52px;"><!-- HERO -->
@@ -667,6 +667,7 @@ body { background: #000; color: #fff; overflow-x: hidden; }
            -->
    </section>
 
+<?php if (false): /* SKRYTO: TRAINING CAMP TEASER */ ?>
    <div class="red-line w-full"></div><!-- TRAINING CAMP TEASER -->
    <section class="w-full py-24 px-4 relative" style="background:linear-gradient(135deg,#050002 0%,#0a0010 50%,#050002 100%);">
     <div class="max-w-5xl mx-auto">
@@ -705,6 +706,7 @@ body { background: #000; color: #fff; overflow-x: hidden; }
      </div>
     </div>
    </section>
+<?php endif; /* /SKRYTO: TRAINING CAMP TEASER */ ?>
 
    <div class="red-line w-full"></div><!-- COUNTDOWN -->
    <section id="countdown-section" class="w-full py-24 px-4 text-center relative" style="background: radial-gradient(ellipse at center, #1a0008 0%, #000 70%);">

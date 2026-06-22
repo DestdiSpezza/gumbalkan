@@ -299,7 +299,7 @@ html, body { height: 100%; background: #000; color: #fff; overflow: hidden; font
     <a href="index.php" class="nav-link nav-link-main">GUMBALKÁN</a>
     <a href="alps.php" class="nav-link nav-link-active">Training camp in the Alps</a>
     <a href="supporters.php" class="nav-link font-oswald" style="font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;color:#6b7280;text-decoration:none;margin-left:auto;" onmouseover="this.style.color='#ff003c'" onmouseout="this.style.color='#6b7280'">Supporters</a>
-    <a href="support.php" class="nav-link font-oswald" style="font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;color:#6b7280;text-decoration:none;" onmouseover="this.style.color='#ff003c'" onmouseout="this.style.color='#6b7280'">❤ Podpořte nás</a>
+    <!-- SKRYTO: <a href="support.php" class="nav-link font-oswald" style="font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;color:#6b7280;text-decoration:none;" onmouseover="this.style.color='#ff003c'" onmouseout="this.style.color='#6b7280'">❤ Podpořte nás</a> -->
   </nav>
 
   <!-- SIDEBAR -->

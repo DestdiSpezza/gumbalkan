@@ -138,7 +138,7 @@ html, body { min-height: 100%; background: #000; color: #fff; font-family: 'Oswa
 <!-- NAV -->
 <nav id="nav">
   <a href="index.php"  class="nav-link nav-link-main">GUMBALKÁN</a>
-  <a href="alps.php"   class="nav-link nav-link-sub">Alps</a>
+  <!-- SKRYTO: <a href="alps.php"   class="nav-link nav-link-sub">Alps</a> -->
   <a href="supporters.php" class="nav-link nav-link-sub">Supporters</a>
   <a href="support.php" class="nav-link nav-link-active">Podpora</a>
 </nav>

@@ -376,8 +376,8 @@ html, body { min-height: 100%; background: #000; color: #fff; font-family: 'Oswa
 <!-- ── NAV ──────────────────────────────────────────────────────────── -->
 <nav id="nav">
   <a href="index.php" class="nav-link nav-link-main">GUMBALKÁN</a>
-  <a href="alps.php"  class="nav-link nav-link-sub">Training camp</a>
-  <a href="support.php" class="nav-link nav-link-sub">Podpora</a>
+  <!-- SKRYTO: <a href="alps.php"  class="nav-link nav-link-sub">Training camp</a> -->
+  <!-- SKRYTO: <a href="support.php" class="nav-link nav-link-sub">Podpora</a> -->
   <a href="supporters.php" class="nav-link nav-link-active nav-right">KOMUNITA</a>
 </nav>
 
@@ -586,8 +586,8 @@ html, body { min-height: 100%; background: #000; color: #fff; font-family: 'Oswa
   <p class="font-elite" style="color:#4b5563;font-size:.9rem;">Když je cesta cílem</p>
   <div style="margin-top:16px;">
     <a href="index.php" style="font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.25em;color:#6b7280;text-decoration:none;text-transform:uppercase;margin:0 12px;">Domů</a>
-    <a href="alps.php"  style="font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.25em;color:#6b7280;text-decoration:none;text-transform:uppercase;margin:0 12px;">Alps</a>
-    <a href="support.php" style="font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.25em;color:#6b7280;text-decoration:none;text-transform:uppercase;margin:0 12px;">Podpora</a>
+    <!-- SKRYTO: <a href="alps.php"  style="font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.25em;color:#6b7280;text-decoration:none;text-transform:uppercase;margin:0 12px;">Alps</a> -->
+    <!-- SKRYTO: <a href="support.php" style="font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.25em;color:#6b7280;text-decoration:none;text-transform:uppercase;margin:0 12px;">Podpora</a> -->
   </div>
   <div style="margin-top:16px;font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.3em;color:#333;text-transform:uppercase;">
     © 2026 Gumbalkán · Veškerý chaos vyhrazen
