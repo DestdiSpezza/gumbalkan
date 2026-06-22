@@ -3,6 +3,24 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/config.php';
 
+// ─── Detekce lokálního prostředí ──────────────────────────────────────────────
+// Lokál (localhost / CLI) smí jet na SQLite. Reálná doména = produkce.
+function _is_local_environment(): bool
+{
+    // CLI běh (lokální vývoj, migrace, testy) bereme jako lokální.
+    if (PHP_SAPI === 'cli') return true;
+
+    $host = strtolower((string)($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? ''));
+    $host = preg_replace('/:\d+$/', '', $host); // odřízni port
+
+    if ($host === '') return true; // neznámý host → nebraň vývoji
+    if (in_array($host, ['localhost', '127.0.0.1', '::1', '[::1]'], true)) return true;
+    foreach (['.local', '.test', '.localhost'] as $suffix) {
+        if (str_ends_with($host, $suffix)) return true;
+    }
+    return false;
+}
+
 // ─── PDO singleton (SQLite auto-fallback) ─────────────────────────────────────
 function get_db(): PDO
 {
@@ -10,6 +28,20 @@ function get_db(): PDO
     if ($pdo !== null) return $pdo;
 
     $useSqlite = (DB_HOST === '' || !extension_loaded('pdo_mysql'));
+
+    // Pojistka: na produkci (reálná doména) nechceme tichý fallback na prázdnou
+    // SQLite – vypadalo by to jako „smazaná data". Radši nahlásíme chybu.
+    if ($useSqlite && !ALLOW_SQLITE && !_is_local_environment()) {
+        $why = (DB_HOST === '')
+            ? 'chybí MySQL konfigurace (includes/config.local.php s DB_HOST/DB_NAME/DB_USER/DB_PASS)'
+            : 'PHP rozšíření pdo_mysql není načtené';
+        error_log('Gumbalkán DB: ' . $why . ' – fallback na SQLite na produkci zablokován.');
+        throw new RuntimeException(
+            'Databáze není správně nakonfigurovaná: ' . $why . '. '
+            . 'Abych omylem nezačal zapisovat do prázdné lokální SQLite, '
+            . 'připojení jsem zastavil. Zkontroluj includes/config.local.php na serveru.'
+        );
+    }
 
     if ($useSqlite) {
         $dir = dirname(DB_SQLITE_PATH);

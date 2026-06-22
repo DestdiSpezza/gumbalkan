@@ -16,6 +16,15 @@ if (!defined('DB_NAME')) define('DB_NAME', '');
 if (!defined('DB_USER')) define('DB_USER', '');
 if (!defined('DB_PASS')) define('DB_PASS', '');
 
+/**
+ * Povolit fallback na SQLite i na reálné doméně (produkci)?
+ * Default false: pokud na produkci chybí MySQL konfigurace, appka radši
+ * vyhodí jasnou chybu, místo aby potichu jela na prázdné SQLite a tvářila
+ * se, že „zmizela data". Lokální vývoj (localhost / CLI) jede na SQLite vždy.
+ * Nastav na true v config.local.php jen když SQLite na produkci fakt chceš.
+ */
+if (!defined('ALLOW_SQLITE')) define('ALLOW_SQLITE', false);
+
 // ─── Application constants ────────────────────────────────────────────────────
 
 /** Number of registrations that receive "Founding Supporter" status */
